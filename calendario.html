@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Calendario - Microsoft Teams</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
@@ -24,6 +24,7 @@
             --focus-green: #66bb6a;
             --out-of-office: #ff7043;
             --personal-event: #ab47bc;
+            --active-item: #e5e5e5;
         }
 
         [data-theme="dark"] {
@@ -44,6 +45,7 @@
             --focus-green: #388e3c;
             --out-of-office: #e64a19;
             --personal-event: #8e24aa;
+            --active-item: #2a2a2a;
         }
 
         * {
@@ -90,12 +92,13 @@
         .calendar-container {
             display: flex;
             min-height: calc(100vh - 70px);
+            flex-direction: column;
         }
         
         /* Calendario principal */
         .calendar-main {
             flex: 1;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
         }
         
@@ -104,9 +107,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
         
         .view-selector {
@@ -114,13 +117,17 @@
             background-color: var(--bg-color);
             border-radius: 8px;
             overflow: hidden;
+            flex: 1;
+            min-width: 200px;
         }
         
         .view-option {
-            padding: 8px 16px;
+            padding: 8px 12px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s;
+            text-align: center;
+            flex: 1;
         }
         
         .view-option.active {
@@ -131,7 +138,7 @@
         .nav-buttons {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .nav-button {
@@ -155,14 +162,15 @@
             font-weight: 600;
             min-width: 150px;
             text-align: center;
+            font-size: 14px;
         }
         
         /* Filtros y búsqueda */
         .calendar-filters {
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 10px;
+            margin-bottom: 15px;
             flex-wrap: wrap;
         }
         
@@ -172,11 +180,12 @@
             border: 1px solid var(--border-color);
             background-color: var(--card-bg);
             color: var(--text-color);
-            min-width: 250px;
+            flex: 1;
+            min-width: 100%;
         }
         
         .filter-button {
-            padding: 8px 15px;
+            padding: 8px 12px;
             border-radius: 20px;
             border: 1px solid var(--border-color);
             background-color: var(--card-bg);
@@ -186,7 +195,8 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: 14px;
+            font-size: 13px;
+            white-space: nowrap;
         }
         
         .filter-button:hover {
@@ -199,161 +209,139 @@
             border-color: var(--primary-color);
         }
         
-        /* Vista semanal */
+        /* Vista semanal - Mobile First */
         .week-view {
-            display: grid;
-            grid-template-columns: 60px repeat(7, 1fr);
-            grid-template-rows: auto;
-            gap: 10px;
-        }
-        
-        .time-column {
-            grid-column: 1;
-            display: grid;
-            grid-template-rows: repeat(8, 44px);
-        }
-        
-        .time-slot {
             display: flex;
-            justify-content: flex-end;
-            padding-right: 10px;
-            font-size: 12px;
-            color: var(--text-color);
-            opacity: 0.7;
-            position: relative;
-            top: -10px;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .day-container {
+            display: flex;
+            flex-direction: column;
+            background: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
         
         .day-header {
-            text-align: center;
-            padding: 0px;
+            padding: 10px;
             font-weight: 600;
-            border-bottom: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
         
-        .day-column {
-            display: grid;
-            grid-template-rows: repeat(24, 60px);
-            position: relative;
+        .day-events {
+            padding: 5px;
         }
         
-        .day-cell {
-            border-bottom: 1px solid var(--border-color);
+        .time-slot {
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.7;
+            padding: 5px 0;
+            border-bottom: 1px dashed var(--border-color);
         }
         
         .event {
-            position: absolute;
-            left: 2px;
-            right: 2px;
-            border-radius: 4px;
-            padding: 5px;
-            font-size: 12px;
-            overflow: hidden;
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 13px;
+            margin-bottom: 5px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 2px 5px var(--shadow-color);
+            box-shadow: 0 2px 4px var(--shadow-color);
+            position: relative;
+            padding-left: 15px;
         }
         
-        .event:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px var(--shadow-color);
+        .event::before {
+            content: '';
+            position: absolute;
+            left: 5px;
+            top: 5px;
+            bottom: 5px;
+            width: 3px;
+            border-radius: 3px;
         }
         
         .event-title {
             font-weight: 500;
             margin-bottom: 3px;
-            white-space: nowrap;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
         }
         
         .event-time {
             font-size: 11px;
             opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 3px;
         }
         
         .event-meeting {
             background-color: var(--meeting-blue);
             color: white;
-            border-left: 3px solid var(--primary-color);
+        }
+        .event-meeting::before {
+            background-color: var(--primary-color);
         }
         
         .event-focus {
             background-color: var(--focus-green);
             color: white;
-            border-left: 3px solid var(--success-color);
+        }
+        .event-focus::before {
+            background-color: var(--success-color);
         }
         
         .event-ooo {
             background-color: var(--out-of-office);
             color: white;
-            border-left: 3px solid var(--danger-color);
+        }
+        .event-ooo::before {
+            background-color: var(--danger-color);
         }
         
         .event-personal {
             background-color: var(--personal-event);
             color: white;
-            border-left: 3px solid #7b1fa2;
         }
-        /* Posiciones por hora (cada 60px representa 1 hora) */
-        .event-start-00 { top: 0px; }
-        .event-start-01 { top: 60px; }
-        .event-start-02 { top: 120px; }
-        .event-start-03 { top: 180px; }
-        .event-start-04 { top: 240px; }
-        .event-start-05 { top: 300px; }
-        .event-start-06 { top: 360px; }
-        .event-start-07 { top: 420px; }
-        .event-start-08 { top: 480px; }
-        .event-start-09 { top: 540px; }
-        .event-start-10 { top: 600px; }
-        .event-start-11 { top: 660px; }
-        .event-start-12 { top: 720px; }
-        .event-start-13 { top: 780px; }
-        .event-start-14 { top: 840px; }
-        .event-start-15 { top: 900px; }
-        .event-start-16 { top: 960px; }
-        .event-start-17 { top: 1020px; }
-        .event-start-18 { top: 1080px; }
-        .event-start-19 { top: 1140px; }
-        .event-start-20 { top: 1200px; }
-        .event-start-21 { top: 1260px; }
-        .event-start-22 { top: 1320px; }
-        .event-start-23 { top: 1380px; }
-
-        /* Alturas por duración (en minutos) */
-        .event-duration-30  { height: 30px; }
-        .event-duration-60  { height: 60px; }
-        .event-duration-90  { height: 90px; }
-        .event-duration-120 { height: 120px; }
-        .event-duration-150 { height: 150px; }
-        .event-duration-180 { height: 180px; }
-        .event-duration-210 { height: 210px; }
-        .event-duration-240 { height: 240px; }
-
+        .event-personal::before {
+            background-color: #7b1fa2;
+        }
+        
         /* Panel lateral */
         .calendar-sidebar {
-            width: 300px;
+            width: 100%;
             background: var(--card-bg);
-            border-left: 1px solid var(--border-color);
-            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            padding: 15px;
             transition: all 0.3s;
             overflow-y: auto;
+            max-height: 300px;
+            order: -1;
         }
         
         .sidebar-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .upcoming-list {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
         
         .upcoming-item {
@@ -374,15 +362,17 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            font-size: 13px;
         }
         
         .upcoming-title {
             font-weight: 500;
             margin-bottom: 5px;
+            font-size: 14px;
         }
         
         .upcoming-details {
-            font-size: 13px;
+            font-size: 12px;
             opacity: 0.8;
             margin-bottom: 5px;
             display: flex;
@@ -392,7 +382,7 @@
         
         .join-button {
             margin-top: 8px;
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 4px;
             background-color: var(--success-color);
             color: white;
@@ -411,10 +401,10 @@
         /* Botón flotante */
         .new-event-button {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
+            bottom: 20px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background-color: var(--primary-color);
             color: white;
@@ -422,7 +412,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 22px;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(70, 78, 184, 0.3);
             transition: all 0.2s;
@@ -451,13 +441,14 @@
         .modal-content {
             background-color: var(--card-bg);
             border-radius: 12px;
-            width: 500px;
-            max-width: 90%;
+            width: 100%;
+            max-width: 95%;
             max-height: 90vh;
             overflow-y: auto;
-            padding: 25px;
+            padding: 20px;
             box-shadow: 0 5px 20px var(--shadow-color);
             animation: modalFadeIn 0.3s ease-out;
+            margin: 0 10px;
         }
         
         @keyframes modalFadeIn {
@@ -469,11 +460,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .modal-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 600;
         }
         
@@ -494,66 +485,73 @@
         }
         
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .form-label {
             display: block;
             margin-bottom: 5px;
             font-weight: 500;
+            font-size: 14px;
         }
         
         .form-input {
             width: 100%;
-            padding: 10px 15px;
+            padding: 10px 12px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-color);
             color: var(--text-color);
+            font-size: 14px;
         }
         
         .form-row {
             display: flex;
-            gap: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
         
         .form-row .form-group {
             flex: 1;
+            min-width: 120px;
         }
         
         .form-select {
             width: 100%;
-            padding: 10px 15px;
+            padding: 10px 12px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-color);
             color: var(--text-color);
+            font-size: 14px;
         }
         
         .form-textarea {
             width: 100%;
-            padding: 10px 15px;
+            padding: 10px 12px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
             background-color: var(--bg-color);
             color: var(--text-color);
-            min-height: 100px;
+            min-height: 80px;
             resize: vertical;
+            font-size: 14px;
         }
         
         .form-actions {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         
         .form-button {
-            padding: 10px 20px;
+            padding: 10px 16px;
             border-radius: 6px;
             border: none;
             font-weight: 500;
             cursor: pointer;
+            font-size: 14px;
         }
         
         .form-button.cancel {
@@ -573,8 +571,8 @@
         /* Interruptor de tema */
         .theme-toggle {
             position: fixed;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -587,111 +585,124 @@
         }
         
         .theme-toggle span {
-            font-size: 18px;
+            font-size: 16px;
             margin: 0 5px;
         }
 
-        /* Responsive */
-        @media (max-width: 992px) {
-            .calendar-sidebar {
-                width: 250px;
-            }
-        }
-        
-        @media (max-width: 768px) {
-            .calendar-container {
-                flex-direction: column;
-            }
-            
-            .calendar-sidebar {
-                width: 100%;
-                border-left: none;
-                border-top: 1px solid var(--border-color);
-            }
-            
-            .week-view {
-            display: grid;
-            grid-template-columns: 60px repeat(7, 1fr);
-            grid-template-rows: auto repeat(24, 60px);
-        }
-        
-        .time-column {
-            grid-column: 1;
-            grid-row: 2 / span 24;
-            display: grid;
-            grid-template-rows: repeat(24, 60px);
-            position: relative;
-        }
-        
-        .day-header {
-            grid-row: 1;
-            text-align: center;
-            padding: 10px;
-            font-weight: 600;
-            border-bottom: 1px solid var(--border-color);
-        }
-        
-        .day-column {
-            display: contents;
-        }
-        
-        .day-cell {
-            height: 60px;
-            border-bottom: 1px solid var(--border-color);
-            position: relative;
-        }
-        
-        .event {
-            position: absolute;
-            left: 2px;
-            right: 2px;
-            border-radius: 4px;
-            padding: 5px;
-            font-size: 12px;
-            overflow: hidden;
+        /* Mobile menu toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 20px;
             cursor: pointer;
-            transition: all 0.2s;
-            box-shadow: 0 2px 5px var(--shadow-color);
-            z-index: 2;
         }
-        /* <-- Add this closing brace to properly close the previous @media block */
-        }
-        
-        @media (max-width: 576px) {
-            .calendar-controls {
-                flex-direction: column;
-                align-items: flex-start;
+
+        /* Responsive */
+        @media (min-width: 576px) {
+            .calendar-filters {
+                flex-wrap: nowrap;
             }
             
-            .view-selector {
-                width: 100%;
+            .search-input {
+                min-width: auto;
             }
             
-            .view-option {
-                flex: 1;
-                text-align: center;
+            .filter-button {
+                padding: 8px 12px;
             }
             
             .week-view {
-                grid-template-columns: 30px repeat(7, 1fr);
-                overflow-x: auto;
+                display: grid;
+                grid-template-columns: repeat(7, 1fr);
+                gap: 10px;
+            }
+            
+            .day-container {
+                min-height: 500px;
+            }
+            
+            .calendar-sidebar {
+                max-height: none;
+            }
+        }
+        
+        @media (min-width: 768px) {
+            .calendar-container {
+                flex-direction: row;
+            }
+            
+            .calendar-sidebar {
+                width: 280px;
+                border-top: none;
+                border-left: 1px solid var(--border-color);
+                max-height: none;
+                order: 0;
+            }
+            
+            .week-view {
+                grid-template-columns: 60px repeat(7, 1fr);
             }
             
             .time-column {
+                display: grid;
                 grid-template-rows: repeat(24, 30px);
+                position: relative;
+                grid-column: 1;
             }
             
-            .day-column {
-                grid-template-rows: repeat(24, 30px);
-                min-width: 100px;
+            .time-slot {
+                position: relative;
+                top: -8px;
+                font-size: 11px;
+                padding-right: 5px;
+                text-align: right;
+                border-bottom: none;
+            }
+            
+            .day-header {
+                grid-row: 1;
+                text-align: center;
+                padding: 10px;
+                font-weight: 600;
+                border-bottom: 1px solid var(--border-color);
+            }
+            
+            .day-container {
+                display: contents;
+            }
+            
+            .day-events {
+                position: relative;
+                height: 720px; /* 24 horas * 30px */
             }
             
             .event {
-                font-size: 10px;
-                padding: 2px;
+                position: absolute;
+                left: 2px;
+                right: 2px;
+                margin-bottom: 0;
             }
         }
-        /* <-- Add this closing brace to properly close the previous @media block */
+        
+        @media (min-width: 992px) {
+            .calendar-sidebar {
+                width: 320px;
+            }
+            
+            .calendar-main {
+                padding: 20px;
+            }
+            
+            .week-view {
+                grid-template-columns: 80px repeat(7, 1fr);
+            }
+            
+            .time-slot {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -704,9 +715,9 @@
     <!-- Header -->
     <div class="calendar-header">
         <div class="header-left">
-            <a href="actividad.html" class="back-button">
-                <i class="fas fa-arrow-left"></i>
-            </a>
+            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
             <h1 class="calendar-title">Calendario</h1>
         </div>
     </div>
@@ -745,17 +756,20 @@
                     <i class="fas fa-users"></i> Equipo
                 </button>
                 <button class="filter-button">
-                    <i class="fas fa-external-link-alt"></i> Externas
-                </button>
-                <button class="filter-button">
-                    <i class="fas fa-filter"></i> Más filtros
+                    <i class="fas fa-filter"></i> Más
                 </button>
             </div>
             
             <!-- Vista semanal -->
             <div class="week-view">
-                <!-- Columna de horas -->
+                <!-- Columna de horas (solo visible en desktop) -->
                 <div class="time-column">
+                    <div class="time-slot">12 AM</div>
+                    <div class="time-slot">1 AM</div>
+                    <div class="time-slot">2 AM</div>
+                    <div class="time-slot">3 AM</div>
+                    <div class="time-slot">4 AM</div>
+                    <div class="time-slot">5 AM</div>
                     <div class="time-slot">6 AM</div>
                     <div class="time-slot">7 AM</div>
                     <div class="time-slot">8 AM</div>
@@ -765,23 +779,105 @@
                     <div class="time-slot">12 PM</div>
                     <div class="time-slot">1 PM</div>
                     <div class="time-slot">2 PM</div>
-    
+                    <div class="time-slot">3 PM</div>
+                    <div class="time-slot">4 PM</div>
+                    <div class="time-slot">5 PM</div>
+                    <div class="time-slot">6 PM</div>
+                    <div class="time-slot">7 PM</div>
+                    <div class="time-slot">8 PM</div>
+                    <div class="time-slot">9 PM</div>
+                    <div class="time-slot">10 PM</div>
+                    <div class="time-slot">11 PM</div>
+
                 </div>
                 
-                <!-- Días de la semana -->
-                <div class="day-header">Lun 14</div>
-                <div class="day-header">Mar 15</div>
-                <div class="day-header">Mié 16</div>
-                <div class="day-header">Jue 17</div>
-                <div class="day-header">Vie 18</div>
-                <div class="day-header">Sáb 19</div>
-                <div class="day-header">Dom 20</div>
-                
+                <!-- Lunes -->
+                <div class="day-container">
+                    <div class="day-header">Lun 14</div>
+                    <div class="day-events">
+                        <div class="event event-meeting event-duration-60" style="top: 240px;">
+                            <div class="event-title">Reunión matutina</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 8:00 - 9:00 AM</div>
+                        </div>
+                        <div class="event event-focus event-duration-120" style="top: 420px;">
+                            <div class="event-title">Trabajo enfocado</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 11:00 AM - 1:00 PM</div>
+                        </div>
+                    </div>
                 </div>
+                
+                <!-- Martes -->
+                <div class="day-container">
+                    <div class="day-header">Mar 15</div>
+                    <div class="day-events">
+                        <div class="event event-meeting event-duration-90" style="top: 300px;">
+                            <div class="event-title">Revisión de proyecto</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 9:00 - 10:30 AM</div>
+                        </div>
+                        <div class="event event-personal event-duration-60" style="top: 540px;">
+                            <div class="event-title">Branding</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 1:00 - 2:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Miércoles -->
+                <div class="day-container">
+                    <div class="day-header">Mié 16</div>
+                    <div class="day-events">
+                        <div class="event event-ooo event-duration-480" style="top: 180px;">
+                            <div class="event-title">Narrativa Visual</div>
+                            <div class="event-time"><i class="far fa-clock"></i> Todo el día</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Jueves -->
+                <div class="day-container">
+                    <div class="day-header">Jue 17</div>
+                    <div class="day-events">
+                        <div class="event event-meeting event-duration-60" style="top: 240px;">
+                            <div class="event-title">Daily Standup</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 8:00 - 9:00 AM</div>
+                        </div>
+                        <div class="event event-meeting event-duration-60" style="top: 480px;">
+                            <div class="event-title">1:1 con Director</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 12:00 - 1:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Viernes -->
+                <div class="day-container">
+                    <div class="day-header">Vie 18</div>
+                    <div class="day-events">
+                        <div class="event event-meeting event-duration-120" style="top: 300px;">
+                            <div class="event-title">Planificación semanal</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 9:00 - 11:00 AM</div>
+                        </div>
+                        <div class="event event-focus event-duration-180" style="top: 480px;">
+                            <div class="event-title">Trabajo en informe</div>
+                            <div class="event-time"><i class="far fa-clock"></i> 12:00 - 3:00 PM</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sábado -->
+                <div class="day-container">
+                    <div class="day-header">Sáb 19</div>
+                    <div class="day-events"></div>
+                </div>
+                
+                <!-- Domingo -->
+                <div class="day-container">
+                    <div class="day-header">Dom 20</div>
+                    <div class="day-events"></div>
+                </div>
+            </div>
         </div>
         
         <!-- Panel lateral -->
-        <div class="calendar-sidebar">
+        <div class="calendar-sidebar" id="calendar-sidebar">
             <h2 class="sidebar-title">
                 <i class="fas fa-clock"></i> Próximas reuniones
             </h2>
@@ -1047,6 +1143,32 @@
             });
         }
 
+        // Configurar menú móvil
+        function setupMobileMenu() {
+            const toggleButton = document.getElementById('mobile-menu-toggle');
+            const sidebar = document.getElementById('calendar-sidebar');
+            
+            if (toggleButton) {
+                toggleButton.addEventListener('click', function() {
+                    sidebar.style.display = sidebar.style.display === 'none' ? 'block' : 'none';
+                });
+            }
+        }
+
+        // Ajustar sidebar en móviles
+        function handleMobileLayout() {
+            const sidebar = document.getElementById('calendar-sidebar');
+            const toggleButton = document.getElementById('mobile-menu-toggle');
+            
+            if (window.innerWidth < 768) {
+                if (toggleButton) toggleButton.style.display = 'block';
+                if (sidebar) sidebar.style.display = 'none';
+            } else {
+                if (toggleButton) toggleButton.style.display = 'none';
+                if (sidebar) sidebar.style.display = 'block';
+            }
+        }
+
         // Inicializar todo al cargar la página
         document.addEventListener('DOMContentLoaded', function() {
             checkTheme();
@@ -1055,6 +1177,11 @@
             setupFilters();
             setupCalendarEvents();
             setupJoinButtons();
+            setupMobileMenu();
+            handleMobileLayout();
+            
+            // Escuchar cambios de tamaño de ventana
+            window.addEventListener('resize', handleMobileLayout);
         });
     </script>
 </body>
