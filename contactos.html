@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contactos - Microsoft Teams</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f8f9fa;
+            --card-bg: white;
+            --text-color: #323130;
+            --primary-color: #464EB8;
+            --secondary-color: #577FC0;
+            --shadow-color: rgba(0,0,0,0.1);
+            --border-color: #eee;
+            --sidebar-bg: #f3f4f6;
+            --active-item: #e3e6ea;
+            --online-status: #4caf50;
+            --offline-status: #ccc;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --primary-color: #5c6bff;
+            --secondary-color: #7d9fd9;
+            --shadow-color: rgba(0,0,0,0.3);
+            --border-color: #333;
+            --sidebar-bg: #1a1a1a;
+            --active-item: #2d2d2d;
+            --online-status: #4caf50;
+            --offline-status: #666;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Header */
+        .contacts-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .contacts-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        /* Main Container */
+        .contacts-container {
+            padding: 20px;
+        }
+        
+        /* Barra de búsqueda */
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(70, 78, 184, 0.2);
+        }
+        
+        /* Lista de contactos */
+        .contacts-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .contact-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .contact-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px var(--shadow-color);
+        }
+        
+        .contact-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: relative;
+            flex-shrink: 0;
+        }
+        
+        .contact-status {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+        }
+        
+        .status-online {
+            background-color: var(--online-status);
+        }
+        
+        .status-offline {
+            background-color: var(--offline-status);
+        }
+        
+        .contact-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .contact-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .contact-description {
+            font-size: 14px;
+            opacity: 0.8;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* Panel de opciones */
+        .contact-options {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: var(--card-bg);
+            box-shadow: -5px 0 15px var(--shadow-color);
+            z-index: 200;
+            padding: 20px;
+            transition: transform 0.3s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .contact-options.active {
+            transform: translateX(-300px);
+        }
+        
+        .options-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .options-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .options-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .options-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-button {
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .action-button:hover {
+            background-color: var(--active-item);
+            transform: translateX(5px);
+        }
+        
+        .action-button.primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .action-button.primary:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        .close-options {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: var(--bg-color);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        
+        .close-options:hover {
+            background-color: var(--active-item);
+        }
+        
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 150;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            z-index: 100;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .contacts-list {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-options {
+                width: 100%;
+                right: -100%;
+            }
+            
+            .contact-options.active {
+                transform: translateX(-100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Interruptor de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+
+    <!-- Header -->
+    <div class="contacts-header">
+        <div class="header-left">
+            <a href="actividad.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="contacts-title">Contactos</h1>
+        </div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="contacts-container">
+        <!-- Barra de búsqueda -->
+        <div class="search-bar">
+            <input type="text" class="search-input" id="search-contacts" placeholder="Buscar contactos...">
+        </div>
+        
+        <!-- Lista de contactos -->
+        <div class="contacts-list" id="contacts-list">
+            <!-- Profesores -->
+            <div class="contact-card" data-contact="mora">
+                <img src="https://randomuser.me/api/portraits/men/32.jpg" class="contact-avatar">
+                <span class="contact-status status-online"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Ing. Mora</div>
+                    <div class="contact-description">Profesor de Ingeniería de Software - Departamento de Sistemas</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="crespo">
+                <img src="https://randomuser.me/api/portraits/men/41.jpg" class="contact-avatar">
+                <span class="contact-status status-offline"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Ing. Crespo</div>
+                    <div class="contact-description">Profesor de Bases de Datos - Coordinador de Carrera</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="arevalo">
+                <img src="https://randomuser.me/api/portraits/women/44.jpg" class="contact-avatar">
+                <span class="contact-status status-online"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Lcda. Arévalo</div>
+                    <div class="contact-description">Profesora de Branding - Facultad de Comunicación Social</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="jaramillo">
+                <img src="https://randomuser.me/api/portraits/men/22.jpg" class="contact-avatar">
+                <span class="contact-status status-online"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Ing. Jaramillo</div>
+                    <div class="contact-description">Profesor de Inteligencia Artificial - Investigador Principal</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="martinez">
+                <img src="https://randomuser.me/api/portraits/women/28.jpg" class="contact-avatar">
+                <span class="contact-status status-offline"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Lcda. Martínez</div>
+                    <div class="contact-description">Profesora de Proyecto Desarrollo de Diseño</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="bonilla">
+                <img src="https://randomuser.me/api/portraits/women/33.jpg" class="contact-avatar">
+                <span class="contact-status status-online"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Lcda. Bonilla</div>
+                    <div class="contact-description">Profesora de Comunicación - Coordinadora de Prácticas</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="garcia">
+                <img src="https://randomuser.me/api/portraits/men/45.jpg" class="contact-avatar">
+                <span class="contact-status status-offline"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Ing. G. Medio</div>
+                    <div class="contact-description">Profesor de Diseño de Marca - Facultad de Comunicación Social</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="perez">
+                <img src="https://randomuser.me/api/portraits/men/51.jpg" class="contact-avatar">
+                <span class="contact-status status-online"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Lcdo. Pérez</div>
+                    <div class="contact-description">Profesor de Narrativa Visual - 6to Semestre</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="loor">
+                <img src="https://randomuser.me/api/portraits/women/38.jpg" class="contact-avatar">
+                <span class="contact-status status-offline"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Lcda. Loor</div>
+                    <div class="contact-description">Profesora de Metodología de la Investigación - Tutora de Tesis</div>
+                </div>
+            </div>
+            
+            <!-- Estudiantes -->
+            <div class="contact-card" data-contact="ana">
+                <img src="https://randomuser.me/api/portraits/women/25.jpg" class="contact-avatar">
+                <span class="contact-status status-online"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Ana Rodríguez</div>
+                    <div class="contact-description">Estudiante de Diseño Web - 7mo Semestre</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="carlos">
+                <img src="https://randomuser.me/api/portraits/men/30.jpg" class="contact-avatar">
+                <span class="contact-status status-offline"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Carlos Méndez</div>
+                    <div class="contact-description">Estudiante de Ingeniería en Software - Grupo de Investigación</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="maria">
+                <img src="https://randomuser.me/api/portraits/women/42.jpg" class="contact-avatar">
+                <span class="contact-status status-online"></span>
+                <div class="contact-info">
+                    <div class="contact-name">María González</div>
+                    <div class="contact-description">Estudiante de Diseño - Asistente de Investigación</div>
+                </div>
+            </div>
+            
+            <div class="contact-card" data-contact="juan">
+                <img src="https://randomuser.me/api/portraits/men/35.jpg" class="contact-avatar">
+                <span class="contact-status status-offline"></span>
+                <div class="contact-info">
+                    <div class="contact-name">Juan Pérez</div>
+                    <div class="contact-description">Estudiante de Diseño Gráfico - Representante de Curso</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Panel de opciones -->
+    <div class="contact-options" id="contact-options">
+        <button class="close-options" id="close-options">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="options-header">
+            <img src="" class="options-avatar" id="options-avatar">
+            <div class="options-name" id="options-name"></div>
+        </div>
+        <div class="options-actions">
+            <button class="action-button primary" id="message-button">
+                <i class="fas fa-comment"></i> Enviar mensaje
+            </button>
+            <button class="action-button">
+                <i class="fas fa-phone"></i> Llamar
+            </button>
+            <button class="action-button">
+                <i class="fas fa-video"></i> Videollamada
+            </button>
+            <button class="action-button">
+                <i class="fas fa-info-circle"></i> Ver perfil
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Datos de los contactos
+        const contacts = {
+            mora: {
+                name: "Ing. Mora",
+                avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+                status: "online",
+                description: "Profesor de Ingeniería de Software - Departamento de Sistemas"
+            },
+            crespo: {
+                name: "Ing. Crespo",
+                avatar: "https://randomuser.me/api/portraits/men/41.jpg",
+                status: "offline",
+                description: "Profesor de Bases de Datos - Coordinador de Carrera"
+            },
+            arevalo: {
+                name: "Lcda. Arévalo",
+                avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+                status: "online",
+                description: "Profesora de Derecho Informático - Facultad de Jurisprudencia"
+            },
+            jaramillo: {
+                name: "Ing. Jaramillo",
+                avatar: "https://randomuser.me/api/portraits/men/22.jpg",
+                status: "online",
+                description: "Profesor de Inteligencia Artificial - Investigador Principal"
+            },
+            martinez: {
+                name: "Lcda. Martínez",
+                avatar: "https://randomuser.me/api/portraits/women/28.jpg",
+                status: "offline",
+                description: "Profesora de Ética Profesional - Departamento de Humanidades"
+            },
+            bonilla: {
+                name: "Lcda. Bonilla",
+                avatar: "https://randomuser.me/api/portraits/women/33.jpg",
+                status: "online",
+                description: "Profesora de Comunicación - Coordinadora de Prácticas"
+            },
+            garcia: {
+                name: "Ing. G. Medio",
+                avatar: "https://randomuser.me/api/portraits/men/45.jpg",
+                status: "offline",
+                description: "Profesor de Gestión Ambiental - Facultad de Ingeniería"
+            },
+            perez: {
+                name: "Lcdo. Pérez",
+                avatar: "https://randomuser.me/api/portraits/men/51.jpg",
+                status: "online",
+                description: "Profesor de Legislación Laboral - Departamento de Derecho"
+            },
+            loor: {
+                name: "Lcda. Loor",
+                avatar: "https://randomuser.me/api/portraits/women/38.jpg",
+                status: "offline",
+                description: "Profesora de Metodología de la Investigación - Tutora de Tesis"
+            },
+            ana: {
+                name: "Ana Rodríguez",
+                avatar: "https://randomuser.me/api/portraits/women/25.jpg",
+                status: "online",
+                description: "Estudiante de Ingeniería en Sistemas - 8vo Semestre"
+            },
+            carlos: {
+                name: "Carlos Méndez",
+                avatar: "https://randomuser.me/api/portraits/men/30.jpg",
+                status: "offline",
+                description: "Estudiante de Ingeniería en Software - Grupo de Investigación"
+            },
+            maria: {
+                name: "María González",
+                avatar: "https://randomuser.me/api/portraits/women/42.jpg",
+                status: "online",
+                description: "Estudiante de Derecho - Asistente de Investigación"
+            },
+            juan: {
+                name: "Juan Pérez",
+                avatar: "https://randomuser.me/api/portraits/men/35.jpg",
+                status: "offline",
+                description: "Estudiante de Ingeniería Ambiental - Representante de Curso"
+            }
+        };
+
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Configurar la búsqueda de contactos
+        function setupSearch() {
+            const searchInput = document.getElementById('search-contacts');
+            const contactCards = document.querySelectorAll('.contact-card');
+            
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                contactCards.forEach(card => {
+                    const contactName = card.querySelector('.contact-name').textContent.toLowerCase();
+                    const contactDesc = card.querySelector('.contact-description').textContent.toLowerCase();
+                    
+                    if (contactName.includes(searchTerm) || contactDesc.includes(searchTerm)) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            });
+        }
+
+        // Configurar los clicks en las tarjetas de contacto
+        function setupContactCards() {
+            const contactCards = document.querySelectorAll('.contact-card');
+            const overlay = document.getElementById('overlay');
+            const optionsPanel = document.getElementById('contact-options');
+            const closeButton = document.getElementById('close-options');
+            const messageButton = document.getElementById('message-button');
+            
+            contactCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const contactId = this.getAttribute('data-contact');
+                    const contact = contacts[contactId];
+                    
+                    // Configurar el panel de opciones
+                    document.getElementById('options-avatar').src = contact.avatar;
+                    document.getElementById('options-name').textContent = contact.name;
+                    
+                    // Mostrar panel y overlay
+                    optionsPanel.classList.add('active');
+                    overlay.classList.add('active');
+                    
+                    // Guardar el contacto seleccionado
+                    optionsPanel.setAttribute('data-current-contact', contactId);
+                });
+            });
+            
+            // Cerrar panel al hacer clic en el overlay o botón de cerrar
+            overlay.addEventListener('click', closeOptions);
+            closeButton.addEventListener('click', closeOptions);
+            
+            // Configurar botón de mensaje
+            messageButton.addEventListener('click', function() {
+                const contactId = optionsPanel.getAttribute('data-current-contact');
+                // Redirigir a mensajes.html con el contacto seleccionado
+                localStorage.setItem('selectedContact', contactId);
+                window.location.href = 'mensajes.html';
+            });
+            
+            function closeOptions() {
+                optionsPanel.classList.remove('active');
+                overlay.classList.remove('active');
+            }
+        }
+
+        // Inicializar todo al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            checkTheme();
+            setupSearch();
+            setupContactCards();
+        });
+    </script>
+</body>
+</html>

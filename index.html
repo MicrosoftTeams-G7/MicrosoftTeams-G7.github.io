@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio - UG Teams</title>
+    <style>
+        /* Variables CSS para temas */
+        :root {
+            /* Modo claro */
+            --bg-color: #f5f5f5;
+            --text-color: #333;
+            --primary-color: #577FC0;
+            --primary-hover: #3a42a5;
+            --secondary-color: #2b5893;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --card-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            /* Modo oscuro */
+            --bg-color: #121212;
+            --text-color: #e1e1e1;
+            --primary-color: #5c6bff;
+            --primary-hover: #4a58d8;
+            --secondary-color: #7a9eff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --card-bg: #1e1e1e;
+        }
+
+        /* Reset y estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+        }
+        
+        /* Contenedor principal */
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        /* Logo de Teams */
+        .logo-teams {
+            width: min(80%, 500px);
+            height: auto;
+            margin-bottom: 40px;
+            filter: drop-shadow(0 4px 8px var(--shadow-color));
+        }
+
+        /* Contenedor de botón */
+        .btn-container {
+            margin: 30px 0;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Botón Empezar */
+        .btn-empezar {
+            display: inline-block;
+            padding: 16px 48px;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border: none;
+            border-radius: 4px;
+            font-size: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(70, 78, 184, 0.2);
+        }
+        
+        .btn-empezar:hover {
+            background-color: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(70, 78, 184, 0.3);
+        }
+        
+        /* Enlaces inferiores */
+        .footer-links {
+            margin-top: auto;
+            padding: 20px;
+            width: 100%;
+            text-align: center;
+            font-size: 20px;
+        }
+        
+        .footer-links a {
+            color: var(--primary-color);
+            text-decoration: none;
+            margin: 0 15px;
+            transition: all 0.3s;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+            color: var(--secondary-color);
+            background-color: rgba(0,0,0,0.05);
+        }
+
+        /* Toggle de tema */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background-color: rgba(0,0,0,0.05);
+            font-size: 16px;
+        }
+        
+        .theme-toggle span {
+            margin-left: 8px;
+        }
+        
+        /* Efecto de carga */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .main-container {
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+            .logo-teams {
+                width: 70%;
+                margin-bottom: 30px;
+            }
+            
+            .btn-empezar {
+                padding: 14px 40px;
+                font-size: 20px;
+            }
+            
+            .footer-links {
+                font-size: 16px;
+                flex-direction: column;
+            }
+            
+            .footer-links a {
+                margin: 5px 0;
+                display: block;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo-teams {
+                width: 80%;
+                margin-bottom: 25px;
+            }
+            
+            .btn-empezar {
+                padding: 12px 36px;
+                font-size: 18px;
+            }
+            
+            .footer-links {
+                font-size: 14px;
+            }
+            
+            .theme-toggle {
+                top: 10px;
+                right: 10px;
+                font-size: 14px;
+                padding: 6px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Toggle de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span id="theme-icon">🌙</span>
+        <span id="theme-text">Modo oscuro</span>
+    </div>
+
+    <div class="main-container">
+        <!-- Logo de Microsoft Teams -->
+        <img src="logo teams.png" alt="Microsoft Teams" class="logo-teams">
+        
+        <!-- Botón principal -->
+        <div class="btn-container">
+            <a href="login.html" class="btn-empezar">Empezar</a>
+        </div>
+    </div>
+    
+    <!-- Enlaces de privacidad y cookies abajo -->
+    <div class="footer-links">
+        <a href="privacidad.html">Privacidad</a>
+        <a href="cookies.html">Cookies</a>
+    </div>
+
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Modo oscuro';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Modo claro';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Modo claro';
+            }
+        }
+
+        // Inicializar al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            checkTheme();
+            
+            // Mejorar la accesibilidad del botón
+            const startButton = document.querySelector('.btn-empezar');
+            startButton.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

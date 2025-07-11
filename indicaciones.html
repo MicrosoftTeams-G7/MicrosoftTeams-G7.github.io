@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indicaciones - Microsoft Teams</title>
+    <style>
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f3f3f3;
+            --card-bg: white;
+            --text-color: #323130;
+            --primary-color: #464EB8;
+            --secondary-text: #616161;
+            --shadow-color: rgba(0,0,0,0.1);
+            --link-color: #577FC0;
+            --border-color: #e0e0e0;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --primary-color: #5c6bff;
+            --secondary-text: #a1a1a1;
+            --shadow-color: rgba(0,0,0,0.3);
+            --link-color: #7d9fd9;
+            --border-color: #333;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+            color: var(--text-color);
+        }
+        
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            z-index: 100;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+        
+        .instructions-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 30px;
+            position: relative;
+            text-align: center;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        
+        /* Flecha de volver */
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            z-index: 1;
+        }
+        
+        .back-arrow:hover {
+            opacity: 0.8;
+        }
+        
+        .logo {
+            width: 150px;
+            height: auto;
+            display: block;
+            margin: 0 auto 15px;
+        }
+        
+        /* Imagen centrada */
+        .instruction-image {
+            width: 100%;
+            max-height: 180px;
+            object-fit: contain;
+            margin: 15px auto;
+            border-radius: 4px;
+        }
+        
+        h1 {
+            color: var(--text-color);
+            font-size: 24px;
+            margin-bottom: 25px;
+        }
+        
+        /* Contenedor del botón Entendido */
+        .button-container {
+            position: relative;
+            margin-top: 30px;
+        }
+        
+        /* Puntos animados */
+        .dots-toggle {
+            position: absolute;
+            left: 0;
+            top: -50px;
+            font-size:35px;
+            color: var(--primary-color);
+            cursor: pointer;
+            padding: 5px 10px;
+            user-select: none;
+            line-height: 1;
+            font-weight: bold;
+        }
+        
+        /* Cuadro de indicaciones */
+        .instructions-box {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 15px;
+            margin-bottom: 10px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 2;
+        }
+        
+        .instructions-box.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        
+        .instructions-box li {
+            margin-bottom: 10px;
+            color: var(--secondary-text);
+            list-style-type: none;
+            position: relative;
+            padding-left: 20px;
+            text-align: left;
+        }
+        
+        .instructions-box li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-size: 24px;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+        
+        .btn-understood {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-understood:hover {
+            opacity: 0.9;
+        }
+        
+        .footer-links {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .footer-link {
+            color: var(--link-color);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Interruptor de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+    
+    <div class="instructions-container">
+        <!-- Flecha de volver condicional -->
+        <a href="#" id="backButton" class="back-arrow">←</a>
+        
+        <img src="logo microsoft.png" alt="Microsoft" class="logo">
+        
+        <!-- Imagen centrada -->
+        <img src="instrucciones.png" alt="Instrucciones" class="instruction-image">
+        
+        <h1>Indicaciones</h1>
+        
+        <div class="button-container">
+            <!-- Puntos para mostrar indicaciones -->
+            <div class="dots-toggle" onclick="toggleInstructions()">...</div>
+            
+            <!-- Cuadro de indicaciones -->
+            <div class="instructions-box">
+                <ul>
+                    <li>Revisar el micrófono y cámara antes de unirse</li>
+                    <li>Tener buena conexión a internet</li>
+                    <li>Silenciar micrófono cuando no se esté hablando</li>
+                </ul>
+            </div>
+            
+            <button class="btn-understood" onclick="window.location.href='actividad.html'">Entendido</button>
+        </div>
+        
+        <div class="footer-links">
+            <a href="privacidad.html" class="footer-link">Privacidad</a>
+            <a href="cookies.html" class="footer-link">Cookies</a>
+        </div>
+    </div>
+
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Navegación condicional para la flecha de volver
+        document.addEventListener('DOMContentLoaded', function() {
+            checkTheme(); // Verificar el tema al cargar
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const from = urlParams.get('from');
+            const backButton = document.getElementById('backButton');
+            
+            if(from === 'email') {
+                backButton.href = 'correo.html';
+            } else {
+                backButton.href = 'login.html';
+            }
+        });
+
+        function toggleInstructions() {
+            const instructionsBox = document.querySelector('.instructions-box');
+            instructionsBox.classList.toggle('show');
+            event.stopPropagation();
+        }
+        
+        // Cerrar el cuadro al hacer clic fuera
+        document.addEventListener('click', function(event) {
+            const instructionsBox = document.querySelector('.instructions-box');
+            const dotsToggle = document.querySelector('.dots-toggle');
+            
+            if (!event.target.closest('.dots-toggle') && !event.target.closest('.instructions-box')) {
+                instructionsBox.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

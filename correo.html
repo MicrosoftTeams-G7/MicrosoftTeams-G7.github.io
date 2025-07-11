@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingresar correo - Microsoft Teams</title>
+    <style>
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f3f3f3;
+            --card-bg: white;
+            --text-color: #333;
+            --primary-color: #464EB8;
+            --secondary-text: #666;
+            --shadow-color: rgba(0,0,0,0.1);
+            --link-color: #577FC0;
+            --input-border: #ddd;
+            --account-bg: #f8f8f8;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --primary-color: #5c6bff;
+            --secondary-text: #a1a1a1;
+            --shadow-color: rgba(0,0,0,0.3);
+            --link-color: #7d9fd9;
+            --input-border: #444;
+            --account-bg: #2a2a2a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+            color: var(--text-color);
+        }
+        
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            z-index: 100;
+            border: 1px solid var(--input-border);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+        
+        .email-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 30px;
+            position: relative;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        
+        /* Flecha de volver */
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            z-index: 1;
+        }
+        
+        .back-arrow:hover {
+            opacity: 0.8;
+        }
+        
+        .logo {
+            width: 160px;
+            height: auto;
+            display: block;
+            margin: 0 auto 25px;
+        }
+        
+        .account-info {
+            background: var(--account-bg);
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+        
+        .account-email {
+            font-weight: 600;
+            font-size: 16px;
+            color: var(--text-color);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        
+        .email-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(70, 78, 184, 0.2);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            opacity: 0.9;
+        }
+        
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--account-bg);
+        }
+        
+        .footer-links {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .footer-link {
+            color: var(--link-color);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Interruptor de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+    
+    <div class="email-container">
+        <!-- Flecha de volver -->
+        <a href="login.html" class="back-arrow">←</a>
+        
+        <img src="logo microsoft.png" alt="Microsoft" class="logo">
+        
+        <div class="form-group">
+            <input type="email" class="email-input" placeholder="Escribir correo">
+        </div>
+        
+        <button class="btn btn-primary" onclick="window.location.href='indicaciones.html?from=email'">Siguiente</button>
+        <button class="btn btn-secondary" onclick="window.location.href='reunion.html'">Unirse a una reunión</button>
+        
+        <div class="footer-links">
+            <a href="privacidad.html" class="footer-link">Privacidad</a>
+            <a href="cookies.html" class="footer-link">Cookies</a>
+        </div>
+    </div>
+
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Validación del correo electrónico
+        document.addEventListener('DOMContentLoaded', function() {
+            checkTheme(); // Verificar el tema al cargar
+            
+            const emailInput = document.querySelector('.email-input');
+            const nextButton = document.querySelector('.btn-primary');
+            
+            emailInput.addEventListener('input', function() {
+                const isValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.value);
+                
+                if (this.value && !isValid) {
+                    this.style.borderColor = '#ff4444';
+                    this.style.boxShadow = '0 0 0 2px rgba(255, 68, 68, 0.2)';
+                } else {
+                    this.style.borderColor = isValid ? 'var(--primary-color)' : 'var(--input-border)';
+                    this.style.boxShadow = isValid ? '0 0 0 2px rgba(70, 78, 184, 0.2)' : 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

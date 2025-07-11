@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Cookies</title>
+    <style>
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f5f5f5;
+            --card-bg: white;
+            --text-color: #333;
+            --primary-color: #577FC0;
+            --secondary-color: #333;
+            --shadow-color: rgba(0,0,0,0.1);
+            --btn-bg: #333;
+            --btn-text: white;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --primary-color: #7d9fd9;
+            --secondary-color: #ccc;
+            --shadow-color: rgba(0,0,0,0.3);
+            --btn-bg: #555;
+            --btn-text: #f0f0f0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        p {
+            margin-bottom: 1.5em;
+            text-align: justify;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            z-index: 100;
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Interruptor de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+
+    <div class="container">
+        <h1>Política de Cookies</h1>
+        <p>Las cookies son pequeños archivos de texto colocados en su dispositivo para almacenar datos que puede leer un servidor web del dominio que colocó la cookie. Usamos cookies y tecnologías similares para almacenar y seguir sus preferencias y configuración, posibilitándole iniciar sesión, proporcionando publicidad basada en intereses, luchando contra el fraude, analizando cómo funcionan nuestros productos y satisfaciendo otros fines legítimos. Las aplicaciones de Microsoft usan identificadores adicionales, como el id. de publicidad en Windows, que se describe en la sección Id. de publicidad de esta declaración de privacidad, con fines similares.</p>
+        <p>También usamos "balizas web" para ayudar a entregar cookies y recopilar datos de uso y rendimiento. Nuestros sitios web pueden incluir balizas web, cookies o tecnologías similares de los afiliados y partners de Microsoft, así como de terceros, como proveedores de servicios que actúan en nombre de Microsoft.</p>
+        <p>Las cookies de terceros pueden incluir: Cookies de redes sociales diseñadas para mostrarle anuncios y contenido con base en sus perfiles en las redes sociales y su actividad en nuestros sitios web. Las cookies de análisis sirven para comprender mejor cómo usted y otros usuarios usan nuestros sitios web, con el fin de mejorarlos y que los terceros puedan mejorar sus propios productos y servicios. Las cookies de anuncios se usan para mostrarle anuncios relevantes. Por último, las cookies necesarias se usan para llevar a cabo las funciones básicas del sitio web. Si es necesario, obtenemos tu consentimiento antes de incluir cookies opcionales que (i) no son estrictamente necesarias para proporcionar el sitio web, o (ii) no tienen como fin facilitar la comunicación.</p>
+        <p>Consulta la sección Más información que se muestra a continuación para obtener información sobre nuestro uso de las cookies de terceros, balizas web y servicios de análisis, y otras tecnologías similares usadas en nuestros sitios web y servicios. Para obtener una lista de los terceros que configuran cookies en nuestros sitios web, incluidos los proveedores de servicios que actúan en nuestro nombre, visita nuestro inventario de cookies de terceros. En algunos de nuestros sitios web, está disponible una lista de terceros directamente en el sitio. Es posible que los terceros de estos sitios no se incluyan en la lista de nuestro inventario de cookies de terceros.</p>
+        <p>Dispone de diversas herramientas para controlar los datos recopilados por las cookies, las balizas web y tecnologías similares. Por ejemplo, puede usar controles en el explorador de Internet para limitar el modo en que los sitios web que visita pueden usar cookies y retirar su consentimiento borrando o bloqueando las cookies.</p>
+        
+        <a href="index.html" class="back-btn">Volver a la página principal</a>
+    </div>
+
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar
+        document.addEventListener('DOMContentLoaded', checkTheme);
+    </script>
+</body>
+</html>

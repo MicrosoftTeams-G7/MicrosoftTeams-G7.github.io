@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario - Microsoft Teams</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f8f9fa;
+            --card-bg: white;
+            --text-color: #323130;
+            --primary-color: #464EB8;
+            --primary-light: #e6e8ff;
+            --secondary-color: #577FC0;
+            --secondary-light: #e1e9f5;
+            --shadow-color: rgba(0,0,0,0.1);
+            --border-color: #eee;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+            --meeting-blue: #4a8cff;
+            --focus-green: #66bb6a;
+            --out-of-office: #ff7043;
+            --personal-event: #ab47bc;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --primary-color: #5c6bff;
+            --primary-light: #2d3c56;
+            --secondary-color: #7d9fd9;
+            --secondary-light: #1a2a3a;
+            --shadow-color: rgba(0,0,0,0.3);
+            --border-color: #333;
+            --success-color: #388e3c;
+            --warning-color: #f57c00;
+            --danger-color: #d32f2f;
+            --meeting-blue: #2962ff;
+            --focus-green: #388e3c;
+            --out-of-office: #e64a19;
+            --personal-event: #8e24aa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Header */
+        .calendar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .calendar-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        /* Main Container */
+        .calendar-container {
+            display: flex;
+            min-height: calc(100vh - 70px);
+        }
+        
+        /* Calendario principal */
+        .calendar-main {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        /* Controles del calendario */
+        .calendar-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .view-selector {
+            display: flex;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .view-option {
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .view-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-button {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--bg-color);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-button:hover {
+            background-color: var(--active-item);
+        }
+        
+        .current-date {
+            font-weight: 600;
+            min-width: 150px;
+            text-align: center;
+        }
+        
+        /* Filtros y búsqueda */
+        .calendar-filters {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            min-width: 250px;
+        }
+        
+        .filter-button {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+        }
+        
+        .filter-button:hover {
+            background-color: var(--bg-color);
+        }
+        
+        .filter-button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        /* Vista semanal */
+        .week-view {
+            display: grid;
+            grid-template-columns: 60px repeat(7, 1fr);
+            grid-template-rows: auto;
+            gap: 10px;
+        }
+        
+        .time-column {
+            grid-column: 1;
+            display: grid;
+            grid-template-rows: repeat(8, 44px);
+        }
+        
+        .time-slot {
+            display: flex;
+            justify-content: flex-end;
+            padding-right: 10px;
+            font-size: 12px;
+            color: var(--text-color);
+            opacity: 0.7;
+            position: relative;
+            top: -10px;
+        }
+        
+        .day-header {
+            text-align: center;
+            padding: 0px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .day-column {
+            display: grid;
+            grid-template-rows: repeat(24, 60px);
+            position: relative;
+        }
+        
+        .day-cell {
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .event {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .event:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-color);
+        }
+        
+        .event-title {
+            font-weight: 500;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .event-time {
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        .event-meeting {
+            background-color: var(--meeting-blue);
+            color: white;
+            border-left: 3px solid var(--primary-color);
+        }
+        
+        .event-focus {
+            background-color: var(--focus-green);
+            color: white;
+            border-left: 3px solid var(--success-color);
+        }
+        
+        .event-ooo {
+            background-color: var(--out-of-office);
+            color: white;
+            border-left: 3px solid var(--danger-color);
+        }
+        
+        .event-personal {
+            background-color: var(--personal-event);
+            color: white;
+            border-left: 3px solid #7b1fa2;
+        }
+        /* Posiciones por hora (cada 60px representa 1 hora) */
+        .event-start-00 { top: 0px; }
+        .event-start-01 { top: 60px; }
+        .event-start-02 { top: 120px; }
+        .event-start-03 { top: 180px; }
+        .event-start-04 { top: 240px; }
+        .event-start-05 { top: 300px; }
+        .event-start-06 { top: 360px; }
+        .event-start-07 { top: 420px; }
+        .event-start-08 { top: 480px; }
+        .event-start-09 { top: 540px; }
+        .event-start-10 { top: 600px; }
+        .event-start-11 { top: 660px; }
+        .event-start-12 { top: 720px; }
+        .event-start-13 { top: 780px; }
+        .event-start-14 { top: 840px; }
+        .event-start-15 { top: 900px; }
+        .event-start-16 { top: 960px; }
+        .event-start-17 { top: 1020px; }
+        .event-start-18 { top: 1080px; }
+        .event-start-19 { top: 1140px; }
+        .event-start-20 { top: 1200px; }
+        .event-start-21 { top: 1260px; }
+        .event-start-22 { top: 1320px; }
+        .event-start-23 { top: 1380px; }
+
+        /* Alturas por duración (en minutos) */
+        .event-duration-30  { height: 30px; }
+        .event-duration-60  { height: 60px; }
+        .event-duration-90  { height: 90px; }
+        .event-duration-120 { height: 120px; }
+        .event-duration-150 { height: 150px; }
+        .event-duration-180 { height: 180px; }
+        .event-duration-210 { height: 210px; }
+        .event-duration-240 { height: 240px; }
+
+        /* Panel lateral */
+        .calendar-sidebar {
+            width: 300px;
+            background: var(--card-bg);
+            border-left: 1px solid var(--border-color);
+            padding: 20px;
+            transition: all 0.3s;
+            overflow-y: auto;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .upcoming-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .upcoming-item {
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .upcoming-item:hover {
+            background-color: var(--active-item);
+        }
+        
+        .upcoming-time {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .upcoming-title {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .upcoming-details {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .join-button {
+            margin-top: 8px;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            font-size: 12px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .join-button:hover {
+            background-color: #3e8e41;
+        }
+        
+        /* Botón flotante */
+        .new-event-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(70, 78, 184, 0.3);
+            transition: all 0.2s;
+            z-index: 90;
+        }
+        
+        .new-event-button:hover {
+            background-color: var(--secondary-color);
+            transform: scale(1.1);
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 200;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 25px;
+            box-shadow: 0 5px 20px var(--shadow-color);
+            animation: modalFadeIn 0.3s ease-out;
+        }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+        
+        .close-modal {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background-color: var(--bg-color);
+            cursor: pointer;
+        }
+        
+        .close-modal:hover {
+            background-color: var(--active-item);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .form-textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .form-button {
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        .form-button.cancel {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        .form-button.submit {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .form-button.submit:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            z-index: 100;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .calendar-sidebar {
+                width: 250px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .calendar-container {
+                flex-direction: column;
+            }
+            
+            .calendar-sidebar {
+                width: 100%;
+                border-left: none;
+                border-top: 1px solid var(--border-color);
+            }
+            
+            .week-view {
+            display: grid;
+            grid-template-columns: 60px repeat(7, 1fr);
+            grid-template-rows: auto repeat(24, 60px);
+        }
+        
+        .time-column {
+            grid-column: 1;
+            grid-row: 2 / span 24;
+            display: grid;
+            grid-template-rows: repeat(24, 60px);
+            position: relative;
+        }
+        
+        .day-header {
+            grid-row: 1;
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .day-column {
+            display: contents;
+        }
+        
+        .day-cell {
+            height: 60px;
+            border-bottom: 1px solid var(--border-color);
+            position: relative;
+        }
+        
+        .event {
+            position: absolute;
+            left: 2px;
+            right: 2px;
+            border-radius: 4px;
+            padding: 5px;
+            font-size: 12px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            z-index: 2;
+        }
+        /* <-- Add this closing brace to properly close the previous @media block */
+        }
+        
+        @media (max-width: 576px) {
+            .calendar-controls {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .view-selector {
+                width: 100%;
+            }
+            
+            .view-option {
+                flex: 1;
+                text-align: center;
+            }
+            
+            .week-view {
+                grid-template-columns: 30px repeat(7, 1fr);
+                overflow-x: auto;
+            }
+            
+            .time-column {
+                grid-template-rows: repeat(24, 30px);
+            }
+            
+            .day-column {
+                grid-template-rows: repeat(24, 30px);
+                min-width: 100px;
+            }
+            
+            .event {
+                font-size: 10px;
+                padding: 2px;
+            }
+        }
+        /* <-- Add this closing brace to properly close the previous @media block */
+    </style>
+</head>
+<body>
+    <!-- Interruptor de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+
+    <!-- Header -->
+    <div class="calendar-header">
+        <div class="header-left">
+            <a href="actividad.html" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <h1 class="calendar-title">Calendario</h1>
+        </div>
+    </div>
+    
+    <!-- Main Container -->
+    <div class="calendar-container">
+        <!-- Calendario principal -->
+        <div class="calendar-main">
+            <!-- Controles del calendario -->
+            <div class="calendar-controls">
+                <div class="view-selector">
+                    <div class="view-option">Día</div>
+                    <div class="view-option active">Semana</div>
+                    <div class="view-option">Mes</div>
+                </div>
+                
+                <div class="nav-buttons">
+                    <button class="nav-button">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div class="current-date">14 - 20 Jul 2025</div>
+                    <button class="nav-button">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Filtros y búsqueda -->
+            <div class="calendar-filters">
+                <input type="text" class="search-input" placeholder="Buscar reuniones...">
+                
+                <button class="filter-button active">
+                    <i class="fas fa-user"></i> Mis reuniones
+                </button>
+                <button class="filter-button">
+                    <i class="fas fa-users"></i> Equipo
+                </button>
+                <button class="filter-button">
+                    <i class="fas fa-external-link-alt"></i> Externas
+                </button>
+                <button class="filter-button">
+                    <i class="fas fa-filter"></i> Más filtros
+                </button>
+            </div>
+            
+            <!-- Vista semanal -->
+            <div class="week-view">
+                <!-- Columna de horas -->
+                <div class="time-column">
+                    <div class="time-slot">6 AM</div>
+                    <div class="time-slot">7 AM</div>
+                    <div class="time-slot">8 AM</div>
+                    <div class="time-slot">9 AM</div>
+                    <div class="time-slot">10 AM</div>
+                    <div class="time-slot">11 AM</div>
+                    <div class="time-slot">12 PM</div>
+                    <div class="time-slot">1 PM</div>
+                    <div class="time-slot">2 PM</div>
+    
+                </div>
+                
+                <!-- Días de la semana -->
+                <div class="day-header">Lun 14</div>
+                <div class="day-header">Mar 15</div>
+                <div class="day-header">Mié 16</div>
+                <div class="day-header">Jue 17</div>
+                <div class="day-header">Vie 18</div>
+                <div class="day-header">Sáb 19</div>
+                <div class="day-header">Dom 20</div>
+                
+                </div>
+        </div>
+        
+        <!-- Panel lateral -->
+        <div class="calendar-sidebar">
+            <h2 class="sidebar-title">
+                <i class="fas fa-clock"></i> Próximas reuniones
+            </h2>
+            
+            <div class="upcoming-list">
+                <div class="upcoming-item">
+                    <div class="upcoming-time">
+                        <i class="far fa-clock"></i> 10:00 - 11:00 AM
+                    </div>
+                    <div class="upcoming-title">Revisión Proyecto Alpha</div>
+                    <div class="upcoming-details">
+                        <i class="fas fa-users"></i> Con: Ing. Mora, Lcda. Arévalo, Carlos
+                    </div>
+                    <div class="upcoming-details">
+                        <i class="fas fa-video"></i> Reunión de Teams
+                    </div>
+                    <button class="join-button">
+                        <i class="fas fa-video"></i> Unirse
+                    </button>
+                </div>
+                
+                <div class="upcoming-item">
+                    <div class="upcoming-time">
+                        <i class="far fa-clock"></i> 11:30 - 12:30 PM
+                    </div>
+                    <div class="upcoming-title">Feedback Producto</div>
+                    <div class="upcoming-details">
+                        <i class="fas fa-user"></i> Con: Lcda. Bonilla
+                    </div>
+                    <div class="upcoming-details">
+                        <i class="fas fa-map-marker-alt"></i> Sala 4B
+                    </div>
+                </div>
+                
+                <div class="upcoming-item">
+                    <div class="upcoming-time">
+                        <i class="far fa-clock"></i> 2:00 - 3:00 PM
+                    </div>
+                    <div class="upcoming-title">1:1 con Ing. Mora</div>
+                    <div class="upcoming-details">
+                        <i class="fas fa-user"></i> Reunión privada
+                    </div>
+                    <div class="upcoming-details">
+                        <i class="fas fa-video"></i> Reunión de Teams
+                    </div>
+                    <button class="join-button">
+                        <i class="fas fa-video"></i> Unirse
+                    </button>
+                </div>
+                
+                <div class="upcoming-item">
+                    <div class="upcoming-time">
+                        <i class="far fa-clock"></i> Mañana, 9:00 - 10:00 AM
+                    </div>
+                    <div class="upcoming-title">Daily Standup</div>
+                    <div class="upcoming-details">
+                        <i class="fas fa-users"></i> Equipo de desarrollo
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Botón flotante -->
+    <button class="new-event-button" id="new-event-button">
+        <i class="fas fa-plus"></i>
+    </button>
+    
+    <!-- Modal para nueva reunión -->
+    <div class="modal" id="event-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Nueva reunión</h2>
+                <button class="close-modal" id="close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="event-form">
+                <div class="form-group">
+                    <label class="form-label">Título</label>
+                    <input type="text" class="form-input" placeholder="Título de la reunión" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Hora de inicio</label>
+                        <input type="time" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Hora de fin</label>
+                        <input type="time" class="form-input" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Participantes</label>
+                    <input type="text" class="form-input" placeholder="Buscar y agregar personas">
+                    <div style="margin-top: 5px; font-size: 12px; opacity: 0.7;">
+                        Ing. Mora, Lcda. Arévalo, Carlos Méndez
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Ubicación</label>
+                    <select class="form-select">
+                        <option>Reunión de Teams</option>
+                        <option>Sala 4B</option>
+                        <option>Sala 5A</option>
+                        <option>Otra ubicación...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Descripción/Agenda</label>
+                    <textarea class="form-textarea" placeholder="Agregar detalles de la reunión..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox"> Reunión recurrente
+                    </label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="form-button cancel" id="cancel-event">Cancelar</button>
+                    <button type="submit" class="form-button submit">Agendar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Configurar el modal de eventos
+        function setupEventModal() {
+            const modal = document.getElementById('event-modal');
+            const openButton = document.getElementById('new-event-button');
+            const closeButton = document.getElementById('close-modal');
+            const cancelButton = document.getElementById('cancel-event');
+            const form = document.getElementById('event-form');
+            
+            openButton.addEventListener('click', function() {
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            });
+            
+            closeButton.addEventListener('click', closeModal);
+            cancelButton.addEventListener('click', closeModal);
+            
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                alert('Reunión agendada exitosamente');
+                closeModal();
+            });
+            
+            function closeModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+            
+            // Cerrar modal al hacer clic fuera
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            });
+        }
+
+        // Configurar los selectores de vista
+        function setupViewSelectors() {
+            const viewOptions = document.querySelectorAll('.view-option');
+            
+            viewOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    viewOptions.forEach(opt => opt.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Aquí iría la lógica para cambiar la vista del calendario
+                    console.log('Cambiando a vista:', this.textContent);
+                });
+            });
+        }
+
+        // Configurar los filtros
+        function setupFilters() {
+            const filterButtons = document.querySelectorAll('.filter-button');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (!this.classList.contains('active')) {
+                        filterButtons.forEach(btn => btn.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        // Aquí iría la lógica para aplicar el filtro
+                        console.log('Filtro aplicado:', this.textContent);
+                    }
+                });
+            });
+        }
+
+        // Configurar eventos del calendario
+        function setupCalendarEvents() {
+            const events = document.querySelectorAll('.event');
+            
+            events.forEach(event => {
+                event.addEventListener('click', function() {
+                    // Aquí iría la lógica para mostrar detalles del evento
+                    const title = this.querySelector('.event-title').textContent;
+                    const time = this.querySelector('.event-time').textContent;
+                    alert(`Detalles del evento:\n${title}\n${time}`);
+                });
+            });
+        }
+
+        // Configurar botones de unirse
+        function setupJoinButtons() {
+            const joinButtons = document.querySelectorAll('.join-button');
+            
+            joinButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const meetingTitle = this.closest('.upcoming-item').querySelector('.upcoming-title').textContent;
+                    alert(`Uniéndose a la reunión: ${meetingTitle}`);
+                });
+            });
+        }
+
+        // Inicializar todo al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            checkTheme();
+            setupEventModal();
+            setupViewSelectors();
+            setupFilters();
+            setupCalendarEvents();
+            setupJoinButtons();
+        });
+    </script>
+</body>
+</html>

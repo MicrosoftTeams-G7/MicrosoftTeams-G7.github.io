@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unirse a una reunión - Microsoft Teams</title>
+    <style>
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f3f3f3;
+            --card-bg: white;
+            --text-color: #323130;
+            --primary-color: #464EB8;
+            --secondary-text: #616161;
+            --shadow-color: rgba(0,0,0,0.1);
+            --link-color: #577FC0;
+            --input-border: #ddd;
+            --header-color: #577FC0;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --primary-color: #5c6bff;
+            --secondary-text: #a1a1a1;
+            --shadow-color: rgba(0,0,0,0.3);
+            --link-color: #7d9fd9;
+            --input-border: #444;
+            --header-color: #7d9fd9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
+            color: var(--text-color);
+        }
+        
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            z-index: 100;
+            border: 1px solid var(--input-border);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+        
+        .meeting-container {
+            width: 100%;
+            max-width: 450px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 20px;
+            position: relative;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        
+        /* Flecha de volver */
+        .back-arrow {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 30px;
+            color: var(--primary-color);
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            text-align: center;
+            line-height: 30px;
+            z-index: 1;
+        }
+        
+        .back-arrow:hover {
+            opacity: 0.8;
+        }
+        
+        h1 {
+            color: var(--header-color);
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-top: 10px;
+        }
+        
+        /* Contenedor de imagen centrada */
+        .image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        /* Imagen responsiva y centrada */
+        .meeting-illustration {
+            width: 100%;
+            height: auto;
+            max-height: 180px;
+            object-fit: contain;
+            border-radius: 4px;
+            display: block;
+        }
+        
+        .instructions {
+            color: var(--secondary-text);
+            font-size: 14px;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 15px;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(70, 78, 184, 0.2);
+        }
+        
+        .join-btn {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        .join-btn:hover {
+            opacity: 0.9;
+        }
+        
+        .footer-links {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .footer-link {
+            color: var(--link-color);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Media queries para responsividad */
+        @media (max-width: 500px) {
+            .meeting-container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 22px;
+                padding-top: 5px;
+            }
+            
+            .image-container {
+                max-width: 250px;
+            }
+            
+            .meeting-illustration {
+                max-height: 150px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .image-container {
+                max-width: 200px;
+            }
+            
+            .meeting-illustration {
+                max-height: 130px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Interruptor de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+    
+    <div class="meeting-container">
+        <!-- Flecha de volver -->
+        <a href="login.html" class="back-arrow">←</a>
+        
+        <h1>Unirse a una reunión</h1>
+        
+        <!-- Contenedor para imagen centrada -->
+        <div class="image-container">
+            <img src="personas icono.png" alt="Ilustración de reunión" class="meeting-illustration">
+        </div>
+        
+        <p class="instructions">
+            Encontrará el ID de la reunión y la información para unirse en la parte inferior de la invitación a la reunión
+        </p>
+        
+        <div class="form-group">
+            <label for="meeting-id">ID de reunión</label>
+            <input type="text" id="meeting-id" placeholder="Escribir ID de reunión">
+        </div>
+        
+        <div class="form-group">
+            <label for="access-code">Código de acceso</label>
+            <input type="text" id="access-code" placeholder="Escribir el código de acceso">
+        </div>
+        
+        <button class="join-btn" onclick="joinMeeting()">Unirse a la reunión</button>
+        
+        <div class="footer-links">
+            <a href="privacidad.html" class="footer-link">Privacidad</a>
+            <a href="cookies.html" class="footer-link">Cookies</a>
+        </div>
+    </div>
+
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        function joinMeeting() {
+            const meetingId = document.getElementById('meeting-id').value;
+            const accessCode = document.getElementById('access-code').value;
+            
+            if(!meetingId) {
+                alert('Por favor ingrese el ID de la reunión');
+                return;
+            }
+            
+            // Redirección a la página de la reunión (simulada)
+            window.location.href = 'meeting.html?id=' + encodeURIComponent(meetingId);
+        }
+
+        // Verificar el tema al cargar
+        document.addEventListener('DOMContentLoaded', checkTheme);
+        
+    </script>
+</body>
+</html>

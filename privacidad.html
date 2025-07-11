@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidad</title>
+    <style>
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f5f5f5;
+            --card-bg: white;
+            --text-color: #333;
+            --primary-color: #577FC0;
+            --secondary-color: #333;
+            --shadow-color: rgba(0,0,0,0.1);
+            --btn-bg: #333;
+            --btn-text: white;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --primary-color: #7d9fd9;
+            --secondary-color: #ccc;
+            --shadow-color: rgba(0,0,0,0.3);
+            --btn-bg: #555;
+            --btn-text: #f0f0f0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        p {
+            margin-bottom: 1.5em;
+            text-align: justify;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+        }
+
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            z-index: 100;
+            border: 1px solid var(--secondary-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: var(--btn-bg);
+            color: var(--btn-text);
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .back-btn:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Interruptor de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+
+    <div class="container">
+        <h1>Política de Privacidad</h1>
+        <p>Su privacidad es importante para nosotros. Esta declaración de privacidad explica cuáles son los datos personales que recopila Microsoft, cómo los trata y con qué fines lo hace.</p>
+        <p>Microsoft ofrece una amplia gama de productos, entre los que se incluyen productos de servidor usados para ayudar a funcionar a empresas de todo el mundo, dispositivos de uso doméstico, software que los estudiantes emplean en su centro educativo y desarrolladores de servicios, cuya finalidad es crear y hospedar lo que está por venir. Entre las referencias a productos de Microsoft usadas en esta declaración se encuentran los servicios, los sitios web, las aplicaciones, el software, los servidores y los dispositivos de Microsoft.</p>
+        <p>Consulte los detalles específicos de cada producto en esta declaración de privacidad, que ofrecen información adicional relevante. Esta declaración se aplica a las interacciones de Microsoft con usted y a los productos de Microsoft enumerados a continuación, así como a otros productos de Microsoft en los que figure esta declaración.</p>
+        <p>Es posible que los jóvenes prefieran empezar con la página Privacidad para los más jóvenes. En esa página se resalta información que puede ser útil para la gente joven.</p>
+        <p>Para las personas que residan en los Estados Unidos, consulte nuestro aviso de privacidad de datos del estado de EE.UU. y la política de privacidad de datos de salud del consumidor para obtener información adicional sobre el procesamiento de tus datos personales, y tus derechos bajo las leyes de privacidad de datos del estado de EE.UU. aplicables.</p>
+        
+        <a href="index.html" class="back-btn">Volver a la página principal</a>
+    </div>
+
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar
+        document.addEventListener('DOMContentLoaded', checkTheme);
+    </script>
+</body>
+</html>

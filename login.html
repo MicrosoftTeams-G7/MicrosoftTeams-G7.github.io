@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Microsoft Teams</title>
+    <style>
+        /* Reset y estilos base */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f3f3f3;
+            --card-bg: white;
+            --text-color: #333;
+            --border-color: #e6e6e6;
+            --primary-color: #464EB8;
+            --hover-bg: #f5f5f5;
+            --secondary-text: #666;
+            --shadow-color: rgba(0,0,0,0.1);
+            --input-border: #ddd;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --border-color: #333;
+            --primary-color: #5c6bff;
+            --hover-bg: #2a2a2a;
+            --secondary-text: #a1a1a1;
+            --shadow-color: rgba(0,0,0,0.3);
+            --input-border: #444;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--hover-bg);
+            z-index: 100;
+            border: 1px solid var(--border-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+        
+        /* Contenedor principal */
+        .login-container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            overflow: hidden;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* Encabezado */
+        .login-header {
+            padding: 25px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .logo {
+            width: 170px;
+            height: auto;
+        }
+        
+        /* Sección de usuario */
+        .user-section {
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .user-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 15px;
+            display: block;
+            border: 3px solid var(--border-color);
+            box-shadow: 0 2px 6px var(--shadow-color);
+        }
+        
+        .email-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            border: 1px solid var(--input-border);
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border 0.3s;
+            background-color: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        .email-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(70, 78, 184, 0.2);
+        }
+        
+        .account-type {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin-bottom: 25px;
+        }
+        
+        /* Botones */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #3a42a5;
+        }
+        
+        .btn-secondary {
+            background: var(--card-bg);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--hover-bg);
+        }
+        
+        .separator {
+            color: var(--secondary-text);
+            margin: 15px 0;
+            font-size: 14px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .separator::before, .separator::after {
+            content: "";
+            flex: 1;
+            border-bottom: 1px solid var(--border-color);
+            margin: 0 10px;
+        }
+        
+        /* Pie de página */
+        .login-footer {
+            padding: 15px 25px;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        .footer-link {
+            color: #577FC0;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+            color: var(--primary-color);
+        }
+        
+        /* Animación */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Interruptor de tema en esquina superior derecha -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+    
+    <div class="login-container">
+        <div class="login-header">
+            <img src="logo microsoft.png" alt="Microsoft" class="logo">
+        </div>
+        
+        <div class="user-section">
+            <!-- Foto de usuario arriba del correo -->
+            <img src="Usuario logo.png" alt="Usuario" class="user-avatar">
+            
+            <!-- Campo de correo editable -->
+            <input type="email" class="email-input" placeholder="Ingrese su correo electrónico" value="Unknown.000@ug.edu.ec">
+            <div class="account-type">Cuenta institucional</div>
+            
+            <button class="btn btn-primary" onclick="window.location.href='indicaciones.html'">Usar esta cuenta</button>
+            <button class="btn btn-secondary" onclick="window.location.href='correo.html'">Crear o usar otra cuenta</button>
+            
+            <div class="separator">o</div>
+            
+            <!-- Botón actualizado para unirse a reunión -->
+            <button class="btn btn-secondary" onclick="window.location.href='reunion.html'">
+                Unirse a una reunión
+            </button>
+        </div>
+        
+        <div class="login-footer">
+            <a href="privacidad.html" class="footer-link">Privacidad</a>
+            <a href="cookies.html" class="footer-link">Cookies</a>
+            <a href="index.html" class="footer-link">Volver</a>
+        </div>
+    </div>
+    
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Validación de email y funcionalidad existente
+        document.addEventListener('DOMContentLoaded', function() {
+            checkTheme(); // Verificar el tema al cargar
+            
+            const emailInput = document.querySelector('.email-input');
+            const nextButton = document.querySelector('.btn-primary');
+            const defaultEmail = 'Unknown.000@ug.edu.ec';
+            
+            // Solo establecer el valor predeterminado si está completamente vacío al cargar
+            if(emailInput.value === '') {
+                emailInput.value = defaultEmail;
+            }
+            
+            // Validación en tiempo real
+            emailInput.addEventListener('input', function() {
+                const currentValue = this.value;
+                const isValid = currentValue === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(currentValue);
+                
+                nextButton.disabled = !isValid;
+                
+                // Cambiar el estilo según la validación
+                if(currentValue && !isValid) {
+                    this.style.borderColor = '#ff4444';
+                    this.style.boxShadow = '0 0 0 2px rgba(255, 68, 68, 0.2)';
+                } else {
+                    this.style.borderColor = isValid ? 'var(--primary-color)' : 'var(--input-border)';
+                    this.style.boxShadow = isValid ? '0 0 0 2px rgba(70, 78, 184, 0.2)' : 'none';
+                }
+            });
+            
+            // Acción del botón Siguiente
+            nextButton.addEventListener('click', function() {
+                if(emailInput.value && emailInput.value !== defaultEmail) {
+                    alert('Correo ingresado: ' + emailInput.value);
+                }
+            });
+            
+            // Manejar el evento de enfoque
+            emailInput.addEventListener('focus', function() {
+                if(this.value === defaultEmail) {
+                    this.select();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

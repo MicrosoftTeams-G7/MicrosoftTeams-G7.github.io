@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicaciones - Microsoft Teams</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #323130;
+            min-height: 100vh;
+        }
+        
+        /* Header */
+        .apps-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .profile-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .apps-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #323130;
+        }
+
+        .apps-word {
+            font-size: 40px;
+            font-weight: 600;
+            color: #577FC0;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .search-icon, .menu-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        /* Contenido principal */
+        .apps-content {
+            padding: 20px;
+        }
+        
+        /* Grid de aplicaciones */
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.2s;
+            padding: 15px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .app-item:hover {
+            transform: scale(1.05);
+            background: #f3f3f3;
+        }
+
+        .app-item img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 8px;
+            object-fit: contain;
+        }
+
+        .app-item span {
+            text-align: center;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* Search Box */
+        .search-container {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            background: white;
+            padding: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            z-index: 101;
+        }
+
+        .search-container.show {
+            display: block;
+        }
+
+        .search-input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 250px;
+        }
+
+        /* Menu Dropdown */
+        .menu-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 20px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 4px;
+            z-index: 101;
+            min-width: 200px;
+        }
+
+        .menu-dropdown.show {
+            display: block;
+        }
+
+        .menu-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .apps-grid {
+                grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+                gap: 15px;
+            }
+            
+            .app-item img {
+                width: 40px;
+                height: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="apps-header">
+        <div class="header-left">
+            <img src="Usuario logo.png" alt="Perfil" class="profile-img">
+            <h1 class="apps-title"><span class="apps-word">Aplicaciones</span></h1>
+        </div>
+        <div class="header-right">
+            <span class="search-icon" onclick="toggleSearch()">🔍</span>
+            <span class="menu-icon" onclick="toggleMenu()">⋮</span>
+        </div>
+        
+        <!-- Search Box -->
+        <div class="search-container" id="searchBox">
+            <input type="text" class="search-input" placeholder="Buscar aplicaciones...">
+        </div>
+        
+        <!-- Menu Dropdown -->
+        <div class="menu-dropdown" id="menuDropdown">
+            <div class="menu-item" onclick="window.location.href='ayuda.html'">Ayuda</div>
+            <div class="menu-item" onclick="window.location.href='configuracion.html'">Configuración</div>
+            <div class="menu-item" id="logout-button">Cerrar sesión</div>
+        </div>
+    </div>
+    
+    <!-- Contenido principal -->
+    <div class="apps-content">
+        <div class="apps-grid">
+            <a href="agregar-apps.html" class="app-item">
+                <img src="img/agregar-icon.png" alt="Agregar más">
+                <span>Agregar más</span>
+            </a>
+            
+            <a href="novedades.html" class="app-item">
+                <img src="img/novedades-icon.png" alt="Novedades">
+                <span>Novedades</span>
+            </a>
+            
+            <a href="archivos.html" class="app-item">
+                <img src="img/archivos-icon.png" alt="Archivos">
+                <span>Archivos</span>
+            </a>
+            
+            <a href="llamadas.html" class="app-item">
+                <img src="img/llamadas-icon.png" alt="Llamadas">
+                <span>Llamadas</span>
+            </a>
+            
+            <a href="camara.html" class="app-item">
+                <img src="img/camara-icon.png" alt="Cámara">
+                <span>Cámara</span>
+            </a>
+            
+            <a href="guardado.html" class="app-item">
+                <img src="img/guardado-icon.png" alt="Guardado">
+                <span>Guardado</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Funciones para los menús
+        function toggleSearch() {
+            document.getElementById('searchBox').classList.toggle('show');
+            document.getElementById('menuDropdown').classList.remove('show');
+        }
+        
+        function toggleMenu() {
+            document.getElementById('menuDropdown').classList.toggle('show');
+            document.getElementById('searchBox').classList.remove('show');
+        }
+        
+        // Cerrar menús al hacer clic fuera
+        window.addEventListener('click', function(event) {
+            if (!event.target.matches('.search-icon') && !event.target.matches('.menu-icon')) {
+                document.getElementById('searchBox').classList.remove('show');
+                document.getElementById('menuDropdown').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

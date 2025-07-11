@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Actividad - Microsoft Teams</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            /* Colores modo claro */
+            --bg-color: #f8f9fa;
+            --card-bg: white;
+            --text-color: #323130;
+            --primary-color: #464EB8;
+            --secondary-color: #577FC0;
+            --shadow-color: rgba(0,0,0,0.1);
+            --border-color: #eee;
+            --mention-color: #d83b01;
+            --unread-bg: #f8f8ff;
+        }
+
+        [data-theme="dark"] {
+            /* Colores modo oscuro */
+            --bg-color: #121212;
+            --card-bg: #1e1e1e;
+            --text-color: #e1e1e1;
+            --primary-color: #5c6bff;
+            --secondary-color: #7d9fd9;
+            --shadow-color: rgba(0,0,0,0.3);
+            --border-color: #333;
+            --mention-color: #ff8c00;
+            --unread-bg: #252538;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        /* Header */
+        .activity-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .activity-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .activity-word {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        .header-right {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .search-icon, .menu-icon {
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+        
+        /* Search Box */
+        .search-container {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            width: 300px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 15px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 101;
+        }
+        
+        .search-container.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--card-bg);
+            color: var(--text-color);
+        }
+        
+        /* Menu Dropdown */
+        .menu-dropdown {
+            position: absolute;
+            top: 70px;
+            right: 20px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 8px 0;
+            width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+            z-index: 101;
+        }
+        
+        .menu-dropdown.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .menu-item {
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover {
+            background: var(--unread-bg);
+        }
+        
+        /* Filtros */
+        .filters-container {
+            display: flex;
+            gap: 10px;
+            padding: 15px 20px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        
+        .filter-pill {
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: var(--bg-color);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .filter-pill.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .filter-submenu {
+            display: none;
+            position: absolute;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 10px;
+            z-index: 100;
+        }
+        
+        .filter-submenu.show {
+            display: block;
+        }
+        
+        .submenu-item {
+            padding: 8px 15px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .submenu-item:hover {
+            background: var(--unread-bg);
+        }
+        
+        /* Contenido de actividad */
+        .activity-content {
+            padding: 20px;
+        }
+        
+        .activity-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            transition: background-color 0.3s;
+        }
+        
+        .activity-item.unread {
+            background: var(--unread-bg);
+        }
+        
+        .activity-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .activity-details {
+            flex: 1;
+        }
+        
+        .activity-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .mention-badge {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--mention-color);
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+        
+        .activity-meta {
+            font-size: 13px;
+            color: var(--text-color);
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+        
+        .activity-course {
+            font-size: 12px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        .read-animation {
+    animation: fadeRead 0.5s ease-out;
+}
+
+@keyframes fadeRead {
+    from {
+        background: var(--unread-bg);
+    }
+    to {
+        background: var(--card-bg);
+    }
+}
+        /* Menú Radial y de puntos */
+        .menu-container {
+            position: fixed;
+            right: 30px;
+            bottom: 30px;
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            z-index: 99;
+        }
+
+        /* Menú Radial */
+        .radial-menu {
+            position: relative;
+            width: 200px;
+            height: 100px;
+        }
+
+        .center-button {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 0 4px 8px var(--shadow-color);
+            transition: transform 0.3s;
+        }
+
+        .center-button:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .menu-item-radial {
+            position: absolute;
+            left: 50%;
+            bottom: 0;
+            transform: translate(-50%, 0);
+            transition: all 0.4s ease;
+            background: var(--secondary-color);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .radial-menu.open .menu-item-radial {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Posicionamiento de los ítems del menú radial */
+        .radial-menu.open .menu-item-radial:nth-child(2) {
+            transform: translate(-50%, -50%) rotate(-90deg) translateY(-80px) rotate(90deg);
+        }
+        .radial-menu.open .menu-item-radial:nth-child(3) {
+            transform: translate(-50%, -50%) rotate(-45deg) translateY(-80px) rotate(45deg);
+        }
+        .radial-menu.open .menu-item-radial:nth-child(4) {
+            transform: translate(-50%, -50%) rotate(0deg) translateY(-80px) rotate(0deg);
+        }
+        .radial-menu.open .menu-item-radial:nth-child(5) {
+            transform: translate(-50%, -50%) rotate(45deg) translateY(-80px) rotate(-45deg);
+        }
+        .radial-menu.open .menu-item-radial:nth-child(6) {
+            transform: translate(-50%, -50%) rotate(90deg) translateY(-80px) rotate(-90deg);
+        }
+
+        /* Menú de tres puntos */
+        .dots-menu {
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .dots-button {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #6c757d;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+
+        .dots-button:hover {
+            background: #5a6268;
+        }
+
+        .dots-content {
+            position: absolute;
+            bottom: 50px;
+            right: 0;
+            width: 180px;
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 8px 0;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s;
+            z-index: 100;
+        }
+
+        .dots-content.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dots-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dots-item:hover {
+            background: var(--unread-bg);
+        }
+.logout-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .logout-modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            text-align: center;
+        }
+
+        .logout-modal p {
+            margin-bottom: 20px;
+            color: #323130;
+        }
+
+        .logout-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .logout-button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+        }
+
+        .logout-confirm {
+            background-color: #d83b01;
+            color: white;
+        }
+
+        .logout-cancel {
+            background-color: #f3f3f3;
+            color: #323130;
+        }
+        /* Interruptor de tema */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 70px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            border-radius: 20px;
+            background: var(--card-bg);
+            z-index: 100;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .theme-toggle span {
+            font-size: 18px;
+            margin: 0 5px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .activity-header {
+                padding: 12px 15px;
+            }
+            
+            .activity-content {
+                padding: 15px;
+            }
+            
+            .search-container {
+                width: calc(100% - 40px);
+                right: 20px;
+            }
+            
+            .menu-container {
+                right: 20px;
+                bottom: 20px;
+            }
+            
+            .theme-toggle {
+                right: 60px;
+            }
+        }
+        .apps-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            z-index: 1001;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .apps-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .apps-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #323130;
+        }
+
+        .close-apps {
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .app-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 8px;
+            transition: background-color 0.3s;
+        }
+
+        .app-item:hover {
+            background-color: #f3f3f3;
+        }
+
+        .app-icon {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        .app-name {
+            text-align: center;
+            font-size: 14px;
+            color: #323130;
+        }
+    .apps-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    justify-content: center;
+    align-items: center;
+}
+
+.apps-modal-content {
+    background-color: var(--card-bg);
+    width: 400px;
+    max-width: 90%;
+    max-height: 70vh;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.apps-modal-header {
+    padding: 16px 20px;
+    background: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.apps-modal-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.close-apps-modal {
+    font-size: 20px;
+    cursor: pointer;
+    color: var(--text-color);
+    opacity: 0.7;
+}
+
+.close-apps-modal:hover {
+    opacity: 1;
+}
+
+.apps-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.app-section {
+    margin-bottom: 20px;
+}
+
+.app-section-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.apps-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+}
+
+.app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    padding: 15px;
+    border-radius: 8px;
+    transition: all 0.3s;
+    background: var(--bg-color);
+}
+
+.app-item:hover {
+    background: var(--unread-bg);
+    transform: translateY(-2px);
+}
+
+.app-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 10px;
+    object-fit: contain;
+}
+
+.app-name {
+    text-align: center;
+    font-size: 14px;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .apps-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .app-icon {
+        width: 35px;
+        height: 35px;
+    }
+}
+</style>
+</head>
+<body>
+    <!-- Interruptor de tema -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <span class="light-icon">☀️</span>
+        <span class="dark-icon" style="display:none">🌙</span>
+    </div>
+
+    <!-- Header -->
+    <div class="activity-header">
+        <div class="header-left">
+            <img src="Usuario logo.png" alt="Perfil" class="profile-img">
+            <h1 class="activity-title"><span class="activity-word">Actividad</span></h1>
+        </div>
+        <div class="header-right">
+            <i class="fas fa-search search-icon" onclick="toggleSearch()"></i>
+            <i class="fas fa-ellipsis-v menu-icon" onclick="toggleMenu()"></i>
+        </div>
+        
+        <!-- Search Box -->
+        <div class="search-container" id="searchBox">
+            <input type="text" class="search-input" placeholder="Buscar actividad..." oninput="filterActivities()">
+        </div>
+        
+        <!-- Menu Dropdown -->
+        <div class="menu-dropdown" id="menuDropdown">
+            <div class="menu-item" onclick="markAllAsRead()">
+    <i class="fas fa-check-double"></i> Marcar todo como leído
+</div>
+            <div class="menu-item" onclick="window.location.href='ayuda.html'">
+                <i class="fas fa-question-circle"></i> Ayuda
+            </div>
+            <div class="menu-item" onclick="window.location.href='configuracion.html'">
+                <i class="fas fa-cog"></i> Configuración
+            </div>
+            <div class="menu-item" id="logout-button">Cerrar sesión</div> <!-- Modificado para abrir modal -->
+            </div>
+        </div>
+        <!-- Modal de confirmación de cierre de sesión -->
+    <div class="logout-modal" id="logoutModal">
+        <div class="logout-modal-content">
+            <p>¿Confirmas que quieres cerrar sesión?</p>
+            <div class="logout-buttons">
+                <button class="logout-button logout-confirm" id="confirmLogout">Cerrar sesión</button>
+                <button class="logout-button logout-cancel" id="cancelLogout">Cancelar</button>
+            </div>
+        </div>
+    </div>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filters-container">
+        <div class="filter-pill" onclick="toggleSubmenu('unread-menu')">
+            <i class="fas fa-envelope"></i> No leído
+        </div>
+        <div class="filter-submenu" id="unread-menu">
+            <div class="submenu-item" onclick="filterByType('all')">
+                <i class="fas fa-list"></i> Todo
+            </div>
+            <div class="submenu-item" onclick="filterByType('assignment')">
+                <i class="fas fa-book"></i> Asignaciones
+            </div>
+            <div class="submenu-item" onclick="resetFilters()">
+                <i class="fas fa-times"></i> Desactivar
+            </div>
+        </div>
+        
+        <div class="filter-pill" onclick="filterByMentions()">
+            <i class="fas fa-at"></i> Menciones
+        </div>
+        
+        <div class="filter-pill" onclick="toggleSubmenu('calls-menu')">
+            <i class="fas fa-phone"></i> Llamadas
+        </div>
+        <div class="filter-submenu" id="calls-menu">
+            <div class="submenu-item" onclick="filterByType('missed-call')">
+                <i class="fas fa-phone-slash"></i> Perdidas
+            </div>
+            <div class="submenu-item" onclick="filterByType('received-call')">
+                <i class="fas fa-phone-volume"></i> Recibidas
+            </div>
+            <div class="submenu-item" onclick="filterByType('all-calls')">
+                <i class="fas fa-phone-alt"></i> Todas
+            </div>
+        </div>
+        
+        <div class="filter-pill" onclick="showMoreFilters()">
+            <i class="fas fa-ellipsis-h"></i>
+        </div>
+        <div class="filter-submenu" id="more-filters-menu">
+            <div class="submenu-item" onclick="filterByType('files')">
+                <i class="fas fa-file"></i> Archivos
+            </div>
+        </div>
+    </div>
+    
+    <!-- Contenido de actividad -->
+    <div class="activity-content" id="activityContent">
+        <!-- Asignaciones -->
+        <div class="activity-item unread" data-type="assignment" data-mention="false">
+            <img src="mochila icono.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Ing. Mora agregó una asignación</div>
+                <div class="activity-meta">Vencimiento 5 de Jul.</div>
+                <div class="activity-course">6to SEMESTRE - Actividad en clase</div>
+            </div>
+        </div>
+        
+        <div class="activity-item unread" data-type="assignment" data-mention="false">
+            <img src="mochila icono.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Ing. Crespo agregó una asignación</div>
+                <div class="activity-meta">Vencimiento 9 de jul.</div>
+                <div class="activity-course">6to SEMESTRE - Subir evidencia lección</div>
+            </div>
+        </div>
+        
+        <div class="activity-item" data-type="assignment" data-mention="false">
+            <img src="mochila icono.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Lcda. Arévalo agregó una asignación</div>
+                <div class="activity-meta">Vencimiento 21 de jul.</div>
+                <div class="activity-course">6to SEMESTRE - Creación de 10 Key visuals</div>
+            </div>
+        </div>
+        
+        <!-- Llamadas perdidas -->
+        <div class="activity-item unread" data-type="missed-call" data-mention="false">
+            <img src="llamada perdida.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Llamada perdida de Ing. Alvarez</div>
+                <div class="activity-meta">004 075-5246</div>
+                <div class="activity-course">Hoy - 10:15 a.m.</div>
+            </div>
+        </div>
+        
+        <div class="activity-item" data-type="missed-call" data-mention="false">
+            <img src="llamada perdida.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Llamada perdida de Ing. Jaramillo</div>
+                <div class="activity-meta">004 065-5746</div>
+                <div class="activity-course">Ayer - 4:47 p.m.</div>
+            </div>
+        </div>
+        
+        <!-- Llamadas recibidas -->
+        <div class="activity-item" data-type="received-call" data-mention="false">
+            <img src="llamada recibida.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Llamada recibida de Ing. Mora</div>
+                <div class="activity-meta">Duración: 12 minutos y 03 segundos</div>
+                <div class="activity-course">Hoy - 10:15 a.m.</div>
+            </div>
+        </div>
+        
+        <div class="activity-item" data-type="received-call" data-mention="false">
+            <img src="llamada recibida.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Llamada recibida de Lcda. Arévalo</div>
+                <div class="activity-meta">Duración: 7 minutos y 39 segundos</div>
+                <div class="activity-course">Ayer - 4:47 p.m.</div>
+            </div>
+        </div>
+        
+        <!-- Menciones -->
+        <div class="activity-item unread" data-type="mention" data-mention="true">
+            <img src="mencion.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">@Tú fuiste mencionado en un comentario <span class="mention-badge"></span></div>
+                <div class="activity-meta">Revisión de tarea: Actividad 2</div>
+                <div class="activity-course">6to SEMESTRE - Narrativa Visual</div>
+            </div>
+        </div>
+        
+        <div class="activity-item" data-type="mention" data-mention="true">
+            <img src="mencion.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Lcdo. Pérez te mencionó en una actualización <span class="mention-badge"></span></div>
+                <div class="activity-meta">"Por favor revisa los comentarios anteriores"</div>
+                <div class="activity-course">6to SEMESTRE - Branding</div>
+            </div>
+        </div>
+    
+        <!-- Archivos -->
+        <div class="activity-item" data-type="files" data-mention="false">
+            <img src="archivo.png" alt="Usuario" class="activity-img">
+            <div class="activity-details">
+                <div class="activity-title">Nuevo archivo compartido: Presentación Final.pptx</div>
+                <div class="activity-meta">Subido por Ing. Mora</div>
+                <div class="activity-course">6to SEMESTRE - Proyecto Integrador</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Menú Radial y de tres puntos -->
+    <div class="menu-container">
+        <!-- Menú Radial Principal -->
+        <div class="radial-menu">
+            <button id="menu-button" class="center-button">
+                <i class="fas fa-plus"></i>
+            </button>
+
+            <div class="menu-item-radial" style="--i:0;">
+                <i class="fas fa-user" title="Contactos"></i>
+            </div>
+            <div class="menu-item-radial" style="--i:1;">
+                <i class="fas fa-comments" title="Mensajes"></i>
+            </div>
+            <div class="menu-item-radial" style="--i:2;">
+                <i class="fas fa-users" title="Grupos"></i>
+            </div>
+            <div class="menu-item-radial" style="--i:3;">
+                <i class="fas fa-calendar-alt" title="Calendario"></i>
+            </div>
+            <div class="menu-item-radial" style="--i:4;">
+                <i class="fas fa-tasks" title="Tareas"></i>
+            </div>
+        </div>
+      
+        <!-- Menú de tres puntos -->
+        <div class="dots-menu">
+            <button class="dots-button" id="dots-button">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+            <div class="dots-content" id="dots-content">
+                <div class="dots-item" onclick="window.location.href='llamadas.html'">
+                    <i class="fas fa-phone"></i> Llamadas
+                </div>
+                <div class="dots-item" onclick="window.location.href='archivos.html'">
+                    <i class="fas fa-folder"></i> Archivos
+                </div>
+                <div class="dots-item" onclick="window.location.href='approvals.html'">
+                    <i class="fas fa-check-circle"></i> Approvals
+                </div>
+                <div class="dots-item" onclick="window.location.href='camara.html'">
+                    <i class="fas fa-camera"></i> Cámara
+                </div>
+                <div class="dots-item" onclick="window.location.href='novedades.html'">
+                    <i class="fas fa-newspaper"></i> Novedades
+                </div>
+                <div class="dots-item" onclick="window.location.href='agregar.html'">
+                    <i class="fas fa-plus"></i> Agregar
+                </div>
+            </div>
+        </div>
+    </div>
+<!-- Página de aplicaciones -->
+    <div class="apps-modal" id="appsModal">
+    <div class="apps-modal-content">
+        <div class="apps-modal-header">
+            <div class="apps-modal-title">Aplicaciones</div>
+            <div class="close-apps-modal" onclick="closeAppsModal()">×</div>
+        </div>
+        <div class="apps-modal-body">
+            <div class="app-section">
+                <div class="apps-grid">
+                    <div class="app-item" onclick="window.location.href='Agregar más aplicaciones.html'">
+                        <img src="agregar.png" alt="Agregar" class="app-icon">
+                        <div class="app-name">Agregar</div>
+                    </div>
+                    <div class="app-item" onclick="window.location.href='novedades.html'">
+                        <img src="novedades.png" alt="Novedades" class="app-icon">
+                        <div class="app-name">Novedades</div>
+                    </div>
+                    <div class="app-item" onclick="window.location.href='archivos.html'">
+                        <img src="archivos.png" alt="Archivos" class="app-icon">
+                        <div class="app-name">Archivos</div>
+                    </div>
+                    <div class="app-item" onclick="window.location.href='llamadas.html'">
+                        <img src="llamadas.png" alt="Llamadas" class="app-icon">
+                        <div class="app-name">Llamadas</div>
+                    </div>
+                    <div class="app-item" onclick="window.location.href='camara.html'">
+                        <img src="camara.png" alt="Cámara" class="app-icon">
+                        <div class="app-name">Cámara</div>
+                    </div>
+                    <div class="app-item" onclick="window.location.href='guardado.html'">
+                        <img src="guardado.png" alt="Guardado" class="app-icon">
+                        <div class="app-name">Guardado</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <script>
+        // Función para cambiar el tema
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (currentTheme === 'dark') {
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                lightIcon.style.display = 'inline';
+                darkIcon.style.display = 'none';
+            } else {
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Verificar el tema al cargar la página
+        function checkTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            const lightIcon = document.querySelector('.light-icon');
+            const darkIcon = document.querySelector('.dark-icon');
+            
+            if (savedTheme === 'dark') {
+                document.body.setAttribute('data-theme', 'dark');
+                lightIcon.style.display = 'none';
+                darkIcon.style.display = 'inline';
+            }
+        }
+
+        // Toggle search box
+        function toggleSearch() {
+            document.getElementById('searchBox').classList.toggle('show');
+            document.getElementById('menuDropdown').classList.remove('show');
+            document.getElementById('dots-content').classList.remove('show');
+            radialMenu.classList.remove('open');
+        }
+        
+        // Toggle menu dropdown
+        function toggleMenu() {
+            document.getElementById('menuDropdown').classList.toggle('show');
+            document.getElementById('searchBox').classList.remove('show');
+            document.getElementById('dots-content').classList.remove('show');
+            radialMenu.classList.remove('open');
+        }
+        
+        // Toggle submenus
+        function toggleSubmenu(id) {
+            document.querySelectorAll('.filter-submenu').forEach(menu => {
+                if (menu.id !== id) menu.classList.remove('show');
+            });
+            document.getElementById(id).classList.toggle('show');
+        }
+        
+        // Filter activities by search
+        function filterActivities() {
+            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+            const items = document.querySelectorAll('.activity-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(searchTerm) ? 'flex' : 'none';
+            });
+        }
+        
+        // Filter by type
+        function filterByType(type) {
+            const items = document.querySelectorAll('.activity-item');
+            
+            items.forEach(item => {
+                if (type === 'all') {
+                    item.style.display = 'flex';
+                } else if (type === 'all-calls') {
+                    item.style.display = (item.dataset.type === 'missed-call' || item.dataset.type === 'received-call') ? 'flex' : 'none';
+                } else {
+                    item.style.display = item.dataset.type === type ? 'flex' : 'none';
+                }
+            });
+            
+            document.querySelectorAll('.filter-submenu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+        
+        // Filter by mentions
+        function filterByMentions() {
+            const items = document.querySelectorAll('.activity-item');
+            
+            items.forEach(item => {
+                item.style.display = item.dataset.mention === 'true' ? 'flex' : 'none';
+            });
+        }
+        
+        // Reset all filters
+        function resetFilters() {
+            const items = document.querySelectorAll('.activity-item');
+            
+            items.forEach(item => {
+                item.style.display = 'flex';
+            });
+            
+            document.querySelectorAll('.filter-submenu').forEach(menu => {
+                menu.classList.remove('show');
+            });
+        }
+        
+        // Show more filters
+        function showMoreFilters() {
+            toggleSubmenu('more-filters-menu');
+        }
+        // Función para marcar todas las actividades como leídas
+function markAllAsRead() {
+    document.querySelectorAll('.activity-item.unread').forEach(item => {
+        item.classList.remove('unread');
+    });
+    
+    // Cerrar el menú después de la acción
+    document.getElementById('menuDropdown').classList.remove('show');
+    
+    // Mostrar feedback visual (opcional)
+    alert('Todas las notificaciones han sido marcadas como leídas');
+    // O podrías usar un toast notification más elegante
+}
+
+        // Menú radial principal
+        const menuButton = document.getElementById("menu-button");
+        const radialMenu = document.querySelector(".radial-menu");
+
+        menuButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            radialMenu.classList.toggle("open");
+            document.getElementById('dots-content').classList.remove("show");
+        });
+
+        document.querySelectorAll(".menu-item-radial").forEach((item, index) => {
+            item.addEventListener("click", () => {
+                const links = [
+                    "contactos.html",
+                    "mensajes.html",
+                    "grupos.html",
+                    "calendario.html",
+                    "tareas.html"
+                ];
+                if (index < links.length) {
+                    window.location.href = links[index];
+                }
+                radialMenu.classList.remove("open");
+            });
+        });
+
+        // Menú de tres puntos
+        const dotsButton = document.getElementById("dots-button");
+        const dotsContent = document.getElementById("dots-content");
+
+        dotsButton.addEventListener("click", (e) => {
+            e.stopPropagation();
+            dotsContent.classList.toggle("show");
+            radialMenu.classList.remove("open");
+        });
+
+        // Marcar como leído al hacer clic
+        document.querySelectorAll('.activity-item').forEach(item => {
+            item.addEventListener('click', function() {
+                this.classList.remove('unread');
+            });
+        });
+
+        // Close menus when clicking outside
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest('.search-icon') && !e.target.closest('.search-container')) {
+                document.getElementById('searchBox').classList.remove('show');
+            }
+            
+            if (!e.target.closest('.menu-icon') && !e.target.closest('.menu-dropdown')) {
+                document.getElementById('menuDropdown').classList.remove('show');
+            }
+            
+            if (!e.target.closest('.filter-pill') && !e.target.closest('.filter-submenu')) {
+                document.querySelectorAll('.filter-submenu').forEach(menu => {
+                    menu.classList.remove('show');
+                });
+            }
+            
+            if (!e.target.closest('.dots-button') && !e.target.closest('.dots-content')) {
+                dotsContent.classList.remove('show');
+            }
+            
+            if (!e.target.closest('.center-button') && !e.target.closest('.menu-item-radial')) {
+                radialMenu.classList.remove('open');
+            }
+        });
+// Funcionalidad para el modal de cierre de sesión
+        const logoutButton = document.getElementById('logout-button');
+        const logoutModal = document.getElementById('logoutModal');
+        const confirmLogout = document.getElementById('confirmLogout');
+        const cancelLogout = document.getElementById('cancelLogout');
+
+        logoutButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            logoutModal.style.display = 'flex';
+            // Cerrar otros menús
+            document.getElementById('menuDropdown').classList.remove('show');
+            document.getElementById('searchBox').classList.remove('show');
+            document.getElementById('dots-content').classList.remove('show');
+            radialMenu.classList.remove('open');
+        });
+
+        confirmLogout.addEventListener('click', () => {
+            window.location.href = 'login.html';
+        });
+
+        cancelLogout.addEventListener('click', () => {
+            logoutModal.style.display = 'none';
+        });
+
+        // Cerrar modal al hacer clic fuera
+        window.addEventListener('click', (e) => {
+            if (e.target === logoutModal) {
+                logoutModal.style.display = 'none';
+            }
+        });
+
+        // También agregamos el cierre del modal al cierre general de menús
+        document.addEventListener('click', (e) => {
+            // ... (el resto del código existente) ...
+            
+            if (!e.target.closest('.logout-modal-content') && !e.target.closest('#logout-button')) {
+                logoutModal.style.display = 'none';
+            }
+        });
+        function openAppsModal() {
+    document.getElementById('appsModal').style.display = 'flex';
+    // Cerrar otros menús
+    document.getElementById('menuDropdown').classList.remove('show');
+    document.getElementById('searchBox').classList.remove('show');
+    document.getElementById('dots-content').classList.remove('show');
+    radialMenu.classList.remove('open');
+    document.getElementById('logoutModal').style.display = 'none';
+}
+
+function closeAppsModal() {
+    document.getElementById('appsModal').style.display = 'none';
+}
+
+        // Modificar el ítem "Agregar" en el menú de tres puntos
+        document.querySelector('.dots-item:last-child').onclick = openAppsModal;
+
+        // Cerrar página de apps al hacer clic fuera
+        document.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('appsModal')) {
+        closeAppsModal();
+    }
+});
+        // Verificar el tema al cargar
+        document.addEventListener('DOMContentLoaded', checkTheme);
+    </script>
+</body>
+</html>
